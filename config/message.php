@@ -1,0 +1,37 @@
+<?php
+
+return [
+    
+    'alreadyRegister' => 'Your account is already registered!',
+    'successRegister' => 'Your account is succefully registered.',
+    'successOtpSend' => 'Otp code is successfully sent.',
+    'mailSubject' => 'Akoneya',
+    'mailBody' => 'Your otp code is ',
+    'otpSuccess' => 'Verified successfully.',
+    'invalidOtp' => 'Invalid your otp.',
+    'successMsg' => 'Success',
+    'notFoundMsg' => 'No record.',
+    'createSuccessMsg' => 'Created successfully.',
+    'deleteSuccessMsg' => 'Deleted successfully.',
+    'updateSuccessMsg' => 'Updated successfully.',
+    'badRequestMsg' => 'Bad Request.',
+    'currentPasswordFail' => 'Invalid current password.',
+    'successChangePassword' => 'Changed password successfully.',
+    'otpExpired' => 'Your otp is expire.Try again.',
+    'phoneLoginFail' => 'Incorrect phone or password.',
+    'EmailLoginFail' => 'Incorrect email or password.',
+    'accountExist' => 'This account does not exist.',
+    'successLogout' => 'Logout successfully.',
+    'unauthorised'=>'Unauthorized',
+    'changePhoneFail' => 'Can not change your phone number.',
+    'changeEmailFail' => 'Can not change your email.',
+    'mediaTypeRequired' => 'Media type is required.',
+    'mediaDataRequired' => 'Media data is required.',
+    'commentRequired' => 'One of message or media must be present.',
+    'mediaDataAndTypeRequired' => 'Media value is requred.',
+    'mediaDataAndTypeKeyRequired' => 'Media key is requred.',
+    'overCommentMediaUploadLimit' => "Sorry, Uploaded image count are over the limit.",
+    'overNewsfeedMediaUploadLimit' => "You can only upload a maximum of 4 images.",
+    'contentRequired' => 'One of content or media must be present.',
+    'followFail' => 'You can not follow yourself.'
+];
