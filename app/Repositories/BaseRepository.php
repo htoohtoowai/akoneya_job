@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\NewsfeedComment;
 
 abstract class BaseRepository
 {
@@ -17,13 +16,5 @@ abstract class BaseRepository
         return $this->model->where('id', $id)->first();
     }
    
-    public function getNewsfeedReaction($newsfeedId)
-    {
-        $newsfeedLikeCount = $this->model->where('newsfeed_id', $newsfeedId)->count();
-        $newsfeedCommentCount = NewsfeedComment::where('newsfeed_id', $newsfeedId)->count();
-        return [
-            'like' => $newsfeedLikeCount,
-            'comment' => $newsfeedCommentCount
-        ];
-    }
+    
 }

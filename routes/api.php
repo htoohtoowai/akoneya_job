@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => 'localization'], function () {
     Route::group(['middleware'=> 'jwt.verify'], function () {
         Route::group(['middleware' => 'check.accesstoken','namespace'=>'API'], function () {
-           
-           
+            Route::get('jobs', 'JobController@getJobs');
+            Route::post('jobs', 'JobController@createJob');
+            Route::put('jobs/{id}', 'JobController@updateJob');
+            Route::delete('jobs/{id}', 'JobController@deleteJob');
         });
     });
 });
