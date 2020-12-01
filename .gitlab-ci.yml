@@ -1,4 +1,4 @@
-image : registry.gitlab.com/tamrontechnology2020/akoneya_newsfeed:latest
+image : registry.gitlab.com/tamrontechnology2020/akoneya_job:latest
 
 stages : 
   - build
