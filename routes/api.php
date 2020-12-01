@@ -17,8 +17,8 @@ Route::group(['middleware' => 'localization'], function () {
     Route::group(['middleware'=> 'jwt.verify'], function () {
         Route::group(['middleware' => 'check.accesstoken','namespace'=>'API'], function () {
             Route::get('jobs/{id}/save', 'SaveJobController@saveJob');
-            // Route::get('saveJobs', 'SaveJobController@saveJobList');
-            // Route::delete('savedJobs/{id}', 'SaveJobController@saveJobDelete');
+            Route::get('saveJobs', 'SaveJobController@saveJobList');
+            Route::delete('savedJobs/{id}', 'SaveJobController@saveJobDelete');
         });
     });
 });
