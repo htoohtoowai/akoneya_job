@@ -13,11 +13,13 @@ class CreateJobTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('job_types', function (Blueprint $table) {
-            $table->id();
-            $table->text('name', 50);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('job_types')) {
+            Schema::create('job_types', function (Blueprint $table) {
+                $table->id();
+                $table->string('name',50);
+                $table->boolean('deleted_status')->default(0);
+            });
+        }
     }
 
     /**

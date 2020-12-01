@@ -27,15 +27,7 @@ class SampleRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required',
-            'company_name' => 'reqired|max:3000',
-            'job_type' => 'required',
-            'location' => 'required',
-            'salary' => 'required',
-            'address' => 'required',
-            'phone' => 'required',
-            'gender' => 'required',
-            'photo' => 'required'
+            //
         ];
     }
 
