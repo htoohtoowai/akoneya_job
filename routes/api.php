@@ -19,6 +19,12 @@ Route::group(['middleware' => 'localization'], function () {
             Route::get('jobs/{id}/save', 'SaveJobController@saveJob');
             // Route::get('saveJobs', 'SaveJobController@saveJobList');
             // Route::delete('savedJobs/{id}', 'SaveJobController@saveJobDelete');
+            Route::get('jobs', 'JobController@getJobs');
+            Route::post('jobs', 'JobController@createJob');
+            Route::put('jobs/{id}', 'JobController@updateJob');
+            Route::delete('jobs/{id}', 'JobController@deleteJob');
+            
+            Route::get('jobs/types' , 'API\JobTypeController@index');
         });
     });
 });
