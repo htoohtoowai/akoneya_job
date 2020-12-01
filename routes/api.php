@@ -24,7 +24,7 @@ Route::group(['middleware' => 'localization'], function () {
             Route::put('jobs/{id}', 'JobController@updateJob');
             Route::delete('jobs/{id}', 'JobController@deleteJob');
             
-            Route::get('jobs/types', 'API\JobTypeController@index');
+            Route::get('jobs/types', 'JobTypeController@index');
         });
     });
 });
