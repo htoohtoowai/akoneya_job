@@ -18,8 +18,11 @@ Route::group(['middleware' => 'localization'], function () {
         Route::group(['middleware' => 'check.accesstoken','namespace'=>'API'], function () {
             Route::get('jobs', 'JobController@getJobs');
             Route::post('jobs', 'JobController@createJob');
-            Route::put('jobs/{id}', 'JobController@updateJob');
+            Route::post('jobs/{id}', 'JobController@updateJob');
             Route::delete('jobs/{id}', 'JobController@deleteJob');
+            Route::get('jobs/{id}', 'JobController@details');
+            Route::get('locations', 'JobController@getLocations');
+
         });
     });
 });
