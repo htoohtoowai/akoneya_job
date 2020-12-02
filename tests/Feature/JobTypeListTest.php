@@ -44,7 +44,7 @@ class JobTypeListTest extends TestCase
         $user = $this->createUser();
         $token = JWTAuth::fromUser($user);
 
-        $response = $this->get('api/jobs/types', [
+        $response = $this->get('api/jobTypes', [
             'Accept' => 'application/json',
             'Authorization' => "Bearer $token"
         ]);
