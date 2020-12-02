@@ -23,11 +23,11 @@ class CreateJobsTable extends Migration
             $table->text('salary', 200);
             $table->text('address', 500);
             $table->text('phone', 50);
-            $table->text('email', 50);
+            $table->text('email', 50)->nullable();
             $table->integer('gender');
-            $table->text('description', 500);
-            $table->text('requirement', 500);
-            $table->text('photo', 150);
+            $table->text('description', 500)->nullable();
+            $table->text('requirement', 500)->nullable();
+            $table->text('photo', 150)->nullable();
             $table->timestamps();
         });
     }

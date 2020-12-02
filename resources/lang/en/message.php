@@ -14,6 +14,8 @@ return [
     'createSuccessMsg' => 'Created successfully.',
     'deleteSuccessMsg' => 'Deleted successfully.',
     'updateSuccessMsg' => 'Updated successfully.',
+    'saveSuccessMsg' => 'Saved successfully.',
+    'alreadySaved' => 'This job is already saved.',
     'badRequestMsg' => 'Bad Request.',
     'currentPasswordFail' => 'Invalid current password.',
     'successChangePassword' => 'Changed password successfully.',

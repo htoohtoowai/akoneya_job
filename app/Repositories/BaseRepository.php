@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\NewsfeedComment;
 
 abstract class BaseRepository
 {
@@ -12,18 +11,14 @@ abstract class BaseRepository
     {
         $this->model = $model;
     }
+
     public function getById($id)
     {
         return $this->model->where('id', $id)->first();
     }
-   
-    public function getNewsfeedReaction($newsfeedId)
+
+    public function getActiveList()
     {
-        $newsfeedLikeCount = $this->model->where('newsfeed_id', $newsfeedId)->count();
-        $newsfeedCommentCount = NewsfeedComment::where('newsfeed_id', $newsfeedId)->count();
-        return [
-            'like' => $newsfeedLikeCount,
-            'comment' => $newsfeedCommentCount
-        ];
+        return $this->model->where('deleted_status', config('enums.disableDeletedStatus'));
     }
 }

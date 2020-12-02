@@ -2,12 +2,8 @@
 <?php
 
 return [
-    "newsfeed" => [
-        "directory" => "newsfeeds",
-        "maxUploadLimit" => 4
-    ],
-    "newsfeedComment" => [
-        "directory" => "newsfeeds/comments",
+    "job" => [
+        "directory" => "jobs",
         "maxUploadLimit" => 1
     ],
     "profile" => [

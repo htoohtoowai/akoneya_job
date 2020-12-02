@@ -15,7 +15,7 @@ class JobRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,7 +26,14 @@ class JobRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'required',
+            'companyName' => 'required|max:3000',
+            'jobType' => 'required',
+            'location' => 'required',
+            'salary' => 'required',
+            'address' => 'required',
+            'phone' => 'required',
+            'gender' => 'required',
         ];
     }
     protected function failedValidation(Validator $validator)
