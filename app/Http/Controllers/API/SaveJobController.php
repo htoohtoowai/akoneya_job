@@ -12,8 +12,16 @@ class SaveJobController extends Controller
     {
         $this->SaveJobRepository = $SaveJobRepository;
     }
-    public function saveJob(Request $request, $id)
+    public function saveJob(Request $request, $jobId)
     {
-        return $this->SaveJobRepository->saveJob($id, $request->auth_user_id);
+        return $this->SaveJobRepository->saveJob($jobId, $request->auth_user_id);
+    }
+    public function saveJobList(Request $request)
+    {
+        return $this->SaveJobRepository->saveJobList($request);
+    }
+    public function saveJobDelete(Request $request, $saveJobId)
+    {
+        return $this->SaveJobRepository->saveJobDelete($saveJobId, $request->auth_user_id);
     }
 }
