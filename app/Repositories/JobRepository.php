@@ -37,7 +37,7 @@ class JobRepository extends BaseRepository
             $jobInfos = [];
         } 
         else{
-            $jobs = $this->model->select('id','title','salary','company_name','zone_id','created_at')
+            $jobs = $this->model->select('id','title','salary','company_name','zone_id','photo','created_at')
                                     ->where(function ($query) {
                                                     if(  request()->nextId != 0 ){
                                                         $query->where('id', '<=',  request()->nextId);
@@ -61,6 +61,7 @@ class JobRepository extends BaseRepository
                 $jobInfos[$key]['title'] = $value['title'];
                 $jobInfos[$key]['salary'] = $value['salary'];
                 $jobInfos[$key]['companyName'] = $value['company_name'];
+                $jobInfos[$key]['photo'] = (getFileUrlFromAkoneyaMedia($value['photo'])) ?? "";
                 $jobInfos[$key]['location'] = config('zones.zoneSelections')[$value['zone_id']]['name'];
                 $jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id',$clientUserId)->where('job_id',$value['id'])->first() != null)? true:false;
                 $jobInfos[$key]['createdAt'] = strTo24hrFormat($value['created_at']);
@@ -168,18 +169,18 @@ class JobRepository extends BaseRepository
     
         $getProfile=PersonalInformation::select('id','name','image')->where('client_user_id',$job->client_user_id)->first();
 
-        $jobType = JobType::select('name')->where('id',$job->job_type)->first();
+        $jobType = JobType::select('id','name')->where('id',$job->job_type)->first();
 
         $data =  [
             'id' => $job->id,
             'title' => $job->title,
             'salary' => $job->salary,
-            'jobType' => $jobType->name,
+            'jobType' => ['id'=>$jobType->id,'name'=>$jobType->name],
             'companyName' => $job->company_name,
-            'location' => config('zones.zoneSelections')[$job->zone_id]['name'],
-            'photo' => getFileUrlFromAkoneyaMedia($job->photo),
+            'location' => ['id'=>config('zones.zoneSelections')[$job->zone_id]['id'],'name'=>config('zones.zoneSelections')[$job->zone_id]['name']],
+            'photo' => (getFileUrlFromAkoneyaMedia($job->photo))?? "",
             'phone' => explode(",",$job->phone),
-            'gender' => config('gender')[$job->gender],
+            'gender' => $job->gender,
             'email' => ($job->email) ?? "",
             'address' => ($job->address) ?? "",
             'description' => ($job->description)?? "",
