@@ -38,8 +38,11 @@ if (!function_exists('deleteFileFromAkoneyaMedia')) {
 if (!function_exists('getFileUrlFromAkoneyaMedia')) {
     function getFileUrlFromAkoneyaMedia($filePath)
     {
-        $fileUrl = Storage::disk("akoneya")->url($filePath);
-        return $fileUrl;
+        if($filePath != null){
+            $fileUrl = Storage::disk("akoneya")->url($filePath);
+            return $fileUrl;
+        }
+        return null; 
     }
 }
 
