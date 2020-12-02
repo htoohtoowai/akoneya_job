@@ -48,7 +48,6 @@ class JobTypeListTest extends TestCase
             'Accept' => 'application/json',
             'Authorization' => "Bearer $token"
         ]);
-
         $response->assertStatus(200);
         $response->assertJsonStructure([
             "result",
@@ -60,7 +59,5 @@ class JobTypeListTest extends TestCase
             "statusCode" => config('http_status.success'),
             "message" =>  config('message.successMsg')
         ]);
-
-        $response->assertJsonCount(3, "result");
     }
 }

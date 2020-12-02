@@ -34,7 +34,6 @@ class JobRequest extends FormRequest
             'address' => 'required',
             'phone' => 'required',
             'gender' => 'required',
-            'photo' => 'required'
         ];
     }
     protected function failedValidation(Validator $validator)
