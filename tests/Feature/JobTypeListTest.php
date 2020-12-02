@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\JobType;
 use JWTAuth;
 use App\User;
+use Faker\Generator as Faker;
 
 class JobTypeListTest extends TestCase
 {
@@ -23,12 +24,27 @@ class JobTypeListTest extends TestCase
         return $user;
     }
 
+    public function createJobTypes()
+    {
+       return factory(JobType::class, 3)->create();
+    }
+
     public function testJobTypeListSuccess()
     {
+        $jobTypes = $this->createJobTypes();
+        $this->assertDatabaseCount("job_types", 3);
+
+        foreach ($jobTypes as $key => $jobType) {
+            $this->assertDatabaseHas("job_types", [
+                "id" => $jobType->id,
+                "name" => $jobType->name
+            ]);
+        }
+        
         $user = $this->createUser();
         $token = JWTAuth::fromUser($user);
 
-        $response = $this->get('api/jobs/types', [
+        $response = $this->get('api/jobTypes', [
             'Accept' => 'application/json',
             'Authorization' => "Bearer $token"
         ]);
@@ -39,9 +55,12 @@ class JobTypeListTest extends TestCase
             "statusCode",
             "message",
         ]);
+
         $response->assertJson([
             "statusCode" => config('http_status.success'),
             "message" =>  config('message.successMsg')
         ]);
+
+        $response->assertJsonCount(3, "result");
     }
 }
