@@ -8,7 +8,10 @@ use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 use JWTAuth;
 use App\User;
+use App\PersonalInformation;
+
 use App\Models\Job;
+use App\Models\JobType;
 
 class JobTest extends TestCase
 {
@@ -45,20 +48,23 @@ class JobTest extends TestCase
     public function testCreatedJob()
     {
         $user = $this->createUser();
+        $this->createPersonalInformation($user->id);
         $token = JWTAuth::fromUser($user);
+
+        $jobType = $this->createJobType();
                                                                         
         $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
 
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
-            'jobType' => config('mock_data.jobTypeId'),
+            'jobType' => $jobType->id,
             'location' => config('mock_data.locationId'),
             'description' => config('mock_data.description'),
             'salary' => config('mock_data.salary'),
             'address' => config('mock_data.address'),
             'phone' => config('mock_data.phone'),
-            'gender' => config('mock_data.gender'),
+            'gender' => config('mock_data.genderId'),
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement')
@@ -83,8 +89,13 @@ class JobTest extends TestCase
     public function testDeletedJob()
     {
         $user = $this->createUser();
+        $this->createPersonalInformation($user->id);
+
         $token = JWTAuth::fromUser($user);
-        $job = $this->createJob($user->id);
+
+        $jobType = $this->createJobType();
+
+        $job = $this->createJob($user->id,$jobType->id);
                                                
         $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
       
@@ -107,24 +118,27 @@ class JobTest extends TestCase
     public function testUpdatedJob()
     {
         $user = $this->createUser();
+        $this->createPersonalInformation($user->id);
+
         $token = JWTAuth::fromUser($user);
-        $job = $this->createJob($user->id);
+        $jobType = $this->createJobType();
+
+        $job = $this->createJob($user->id,$jobType->id);
 
                                                                         
         $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
 
-        $image = UploadedFile::fake()->create('fake-photo.png');
 
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
-            'jobType' => config('mock_data.name'),
+            'jobType' => $jobType->id,
             'location' => config('mock_data.locationId'),
             'description' => config('mock_data.description'),
             'salary' => config('mock_data.salary'),
             'address' => config('mock_data.address'),
             'phone' => config('mock_data.phone'),
-            'gender' => config('mock_data.gender'),
+            'gender' => config('mock_data.genderId'),
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement')
@@ -156,22 +170,40 @@ class JobTest extends TestCase
             'password' => bcrypt(config('mock_data.password'))
         ]);
     }
-    public function createJob($userId)
+
+    public function createPersonalInformation($userId)
+    {
+        return PersonalInformation::create([
+            'client_user_id' => $userId,
+            'name' => config('mock_data.name'),
+            'email' => config('mock_data.email'),
+            'image' => config('mock_data.coverPhotoUrl'),
+        ]);
+
+    }
+    public function createJob($userId,$jobType)
     {
         return Job::create([
             'client_user_id' => $userId,
             'title' => config('mock_data.name'),
             'company_name' => config('mock_data.companyName'),
-            'job_type' => config('mock_data.name'),
+            'job_type' => $jobType,
             'zone_id' => config('mock_data.locationId'),
             'description' => config('mock_data.description'),
             'salary' => config('mock_data.salary'),
             'address' => config('mock_data.address'),
             'phone' => config('mock_data.phone'),
-            'gender' => config('mock_data.gender'),
+            'gender' => config('mock_data.genderId'),
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement')
+        ]);
+    }
+
+    public function createJobType()
+    {
+        return JobType::create([
+            'name' => config('mock_data.name'),
         ]);
     }
 }

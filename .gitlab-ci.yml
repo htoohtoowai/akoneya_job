@@ -1,4 +1,4 @@
-image : registry.gitlab.com/tamrontechnology2020/akoneya_newsfeed:latest
+image : registry.gitlab.com/tamrontechnology2020/akoneya_job:latest
 
 stages : 
   - build
@@ -7,10 +7,11 @@ stages :
 composer :
   stage : build
   script :
+    - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --no-suggest
     - cp .env.example .env
-    - touch database/test.sqlite
     - php artisan key:generate
-    - composer install --prefer-dist
+    - php artisan jwt:secret
+    - touch database/test.sqlite
   artifacts:
     # (Optional) Give it an expiration date, 
     # after that period you won't be able to download them via the UI anymore.

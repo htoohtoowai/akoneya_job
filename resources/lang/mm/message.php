@@ -14,6 +14,8 @@ return [
     'createSuccessMsg' => 'အောင်မြင်စွာဖန်တီးလိုက်ပြီ။',
     'deleteSuccessMsg' => 'အောင်မြင်စွာဖျက်ပြီးပါပြီ။',
     'updateSuccessMsg' => 'အောင်မြင်စွာအဆင့်မြှင့်တင်ပြီး။',
+    'saveSuccessMsg' => 'အောင်မြင်စွာသိမ်းဆည်းပြီးပါပြီ။',
+    'alreadySaved' => 'ဒီအလုပ်ကိုသိမ်းပြီးပါပြီ။',
     'badRequestMsg' => 'တောင်းဆိုမှုမှားယွင်းနေပါသည်။',
     'currentPasswordFail' => 'လက်ရှိစကားဝှက်မမှန်ကန်ပါ။',
     'successChangePassword' => 'စကားဝှက်ကိုအောင်အောင်မြင်မြင်ပြောင်းပြီး။',

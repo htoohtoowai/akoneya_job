@@ -15,11 +15,10 @@ class CreateSavedJobsTable extends Migration
     {
         if (!Schema::hasTable('saved_jobs')) {
             Schema::create('saved_jobs',function (Blueprint $table) {
-                    $table->id();
-                    $table->unsignedInteger('job_id');
-                    $table->unsignedInteger('client_user_id');
-                }
-            );
+                $table->id();
+                $table->unsignedInteger('job_id');
+                $table->unsignedInteger('client_user_id');
+            });
         }
     }
 

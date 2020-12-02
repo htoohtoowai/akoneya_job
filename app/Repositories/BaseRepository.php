@@ -11,10 +11,14 @@ abstract class BaseRepository
     {
         $this->model = $model;
     }
+
     public function getById($id)
     {
         return $this->model->where('id', $id)->first();
     }
-   
-    
+
+    public function getActiveList()
+    {
+        return $this->model->where('deleted_status', config('enums.disableDeletedStatus'));
+    }
 }

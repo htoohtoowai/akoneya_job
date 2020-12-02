@@ -17,7 +17,7 @@ return [
     'jobDescription' => 'A job description or JD is a written narrative that describes the general tasks, or other related duties, and responsibilities of a position',
     'requirement' => 'uA job description or JD is a written narrative that describes the general tasks, or other related duties, and responsibilities of a position',
     'email' => "test@email.com",
-    'gender' => "male",
+    'genderId' => 1 ,
     'dateOfBirth' => "1996-01-09",
     'bio' => "This is bio.",
     'address' => "This is address",
