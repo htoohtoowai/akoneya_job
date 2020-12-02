@@ -27,7 +27,7 @@ class JobRepository extends BaseRepository
     {
         $data['zones'] = ZoneListResource::collection($this->zones)->sortBy('name')->values();
 
-        return $this->responseRepo->successResponse($data['zones'], $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        return $this->responseRepo->successResponse($data, $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
 
     public function getJobs($request, $perPage, $clientUserId)
