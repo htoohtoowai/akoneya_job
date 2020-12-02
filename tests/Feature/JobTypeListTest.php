@@ -44,7 +44,7 @@ class JobTypeListTest extends TestCase
         $user = $this->createUser();
         $token = JWTAuth::fromUser($user);
 
-        $response = $this->get('api/jobs/types', [
+        $response = $this->get('api/jobTypes', [
             'Accept' => 'application/json',
             'Authorization' => "Bearer $token"
         ]);
@@ -59,5 +59,7 @@ class JobTypeListTest extends TestCase
             "statusCode" => config('http_status.success'),
             "message" =>  config('message.successMsg')
         ]);
+
+        $response->assertJsonCount(3, "result");
     }
 }

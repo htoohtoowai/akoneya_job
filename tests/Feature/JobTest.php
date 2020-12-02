@@ -24,7 +24,10 @@ class JobTest extends TestCase
     {
         $user = $this->createUser();
         $token = JWTAuth::fromUser($user);
-        $job = $this->createJob($user->id);
+        $jobType = $this->createJobType();
+
+        $job = $this->createJob($user->id,$jobType->id);
+                                               
                                        
         $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
 
