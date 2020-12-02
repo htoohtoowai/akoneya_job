@@ -15,7 +15,8 @@ class JobTypeRepository extends BaseRepository
 
     public function index()
     {
-        $data = $this->getActiveList()->orderBy('name')->get();
-        return $this->responseRepo->successResponse(JobTypeResource::collection($data), $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        $jobTypes = $this->getActiveList()->orderBy('name')->get();
+        $data['jobTypes'] = JobTypeResource::collection($jobTypes);
+        return $this->responseRepo->successResponse($data, $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
 }
