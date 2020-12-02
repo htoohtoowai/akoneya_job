@@ -55,31 +55,31 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {   
-        // if ($exception instanceof NotFoundHttpException){
-        //     return response()->json([
-        //         'result' => null,
-        //         'statusCode' => 404,
-        //         'message' => 'Not Found.'
-        //     ],Response::HTTP_NOT_FOUND);
-        // }
+        if ($exception instanceof NotFoundHttpException){
+            return response()->json([
+                'result' => null,
+                'statusCode' => 404,
+                'message' => 'Not Found.'
+            ],Response::HTTP_NOT_FOUND);
+        }
 
-        // if ($exception instanceof \Illuminate\Database\QueryException) 
-        // {
-        //     return response()->json([
-        //         'result' => null,
-        //         'statusCode' => 500,
-        //         'message' => 'Internal Server Error.',
-        //     ], 500);          
-        // }
+        if ($exception instanceof \Illuminate\Database\QueryException) 
+        {
+            return response()->json([
+                'result' => null,
+                'statusCode' => 500,
+                'message' => 'Internal Server Error.',
+            ], 500);          
+        }
 
-        // if ($exception instanceof ErrorException) 
-        // {
-        //     return response()->json([
-        //         'result' => null,
-        //         'statusCode' => 500,
-        //         'message' => 'Internal Server Error.',
-        //     ], 500);          
-        // }
+        if ($exception instanceof ErrorException) 
+        {
+            return response()->json([
+                'result' => null,
+                'statusCode' => 500,
+                'message' => 'Internal Server Error.',
+            ], 500);          
+        }
         return parent::render($request, $exception);
     }
 

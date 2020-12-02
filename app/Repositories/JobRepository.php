@@ -25,7 +25,7 @@ class JobRepository extends BaseRepository
     }
     public function getZones()
     {
-        $data['zones'] = ZoneListResource::collection($this->zones)->sortBy('name')->values();
+        $data['locations'] = ZoneListResource::collection($this->zones)->sortBy('name')->values();
 
         return $this->responseRepo->successResponse($data, $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
