@@ -16,7 +16,7 @@ class CreatePersonalInformationTable extends Migration
         if (!Schema::hasTable('personal_information')) {
             Schema::create('personal_information', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedInteger('client_user_id');
+                $table->unsignedBigInteger('client_user_id');
                 $table->string('name')->nullable();
                 $table->string('email')->nullable();
                 $table->string('image')->nullable();
