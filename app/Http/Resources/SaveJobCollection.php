@@ -24,7 +24,7 @@ class SaveJobCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'jobs' => $this->collection,
+            'data' => $this->collection,
             'pagination' => $this->pagination
         ];
     }
