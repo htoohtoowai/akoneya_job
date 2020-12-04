@@ -47,4 +47,8 @@ return [
     'postShareSuccess' => '!The post was successfully shared.',
     'commentDeleteSuccess' => 'The comment was successfullly deleted.',
     'commentEditSuccess' => 'The comment was successfullly edited.',
+    'locationNotFound' => 'This location does not exist.',
+    'genderNotFound' => 'This gender does not exist.',
+    'jobTypeNotFound' => 'This job type does not exist.',
+
 ];

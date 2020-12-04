@@ -70,7 +70,26 @@ class JobRepository extends BaseRepository
         return $this->responseRepo->successResponse(['data' => $jobInfos,'pagination' => ['nextId' =>$this->nextId]], $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
     public function createJob($request, $clientUserId)
-    {      
+    {    
+
+        $jobType = JobType::where('id',$request->jobType)->first();
+
+        $message = null;
+
+        if(!in_array( $request->location,range(1,15))){
+            $message = trans('message.locationNotFound');
+        }
+        elseif(!in_array( $request->gender,range(1,3))){
+            $message = trans('message.genderNotFound');
+        }
+        elseif($jobType==null){
+            $message = trans('message.jobTypeNotFound');
+        }
+
+        if($message != null){
+            return $this->responseRepo->failResponse(null, $this->responseRepo->notFoundStatusCode, $message);
+        }
+
         if($request->photo){
             $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
         }else{
@@ -192,6 +211,16 @@ class JobRepository extends BaseRepository
         return $data;
     } 
 
+    
+    public function validationForJobType($jobTypeId)
+    {
+        return $this->responseRepo->failResponse(null, $this->responseRepo->notFoundStatusCode, trans('message.notFoundMsg'));
+    } 
+    public function validationForGender($genderId)
+    {
+        return $this->responseRepo->failResponse(null, $this->responseRepo->notFoundStatusCode, trans('message.notFoundMsg'));
+
+    } 
 
 
 }
