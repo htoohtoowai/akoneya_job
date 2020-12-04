@@ -44,4 +44,8 @@ return [
     'postShareSuccess' => 'ပို့စ် မျှဝေခြင်းအောင်မြင်ပါသည်။',
     'commentDeleteSuccess' => 'မှတ်ချက် အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။',
     'commentEditSuccess' => 'မှတ်ချက်အောင်မြင်စွာ ပြင်ပြီးပါပြီ။',
+    'locationNotFound' => 'ဒီတည်နေရာအမျိုးအစားမရှိပါ။',
+    'genderNotFound' => 'ကျား/မ အမျိုးအစားမရှိပါဘူး။',
+    'jobTypeNotFound' => 'ဒီအလုပ်အမျိုးအစားမရှိပါ။',
+
 ];

@@ -42,5 +42,9 @@ return [
     'postShareSuccess' => '！帖子已成功分享。',
     'commentDeleteSuccess' => '该评论已成功删除。',
     'commentEditSuccess' => '该评论已成功编辑。',
+    'locationNotFound' => '该位置不存在。',
+    'genderNotFound' => '该性别不存在。',
+    'jobTypeNotFound' => '该作业类型不存在。',
+
 
 ];
