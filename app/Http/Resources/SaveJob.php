@@ -15,7 +15,7 @@ class SaveJob extends JsonResource
     public function toArray($request)
     {
         return [
-            'saveJobId' => $this->saveJobId,
+            'id' => $this->saveJobId,
             'jobId' => $this->jobId,
             'photo' => $this->photo ? getFileUrlFromAkoneyaMedia($this->photo) : "",
             'title' => $this->title,

@@ -28,9 +28,8 @@ class SaveJobRepository
                 "job_id" => $jobId,
                 "client_user_id" => $userId
             ]);
-            return $this->responseRepo->successResponse(null, $this->responseRepo->createStatusCode, trans('message.saveSuccessMsg'));
         }
-        return $this->responseRepo->successResponse(null, $this->responseRepo->successStatusCode, trans('message.alreadySaved'));
+        return $this->responseRepo->successResponse(null, $this->responseRepo->createStatusCode, trans('message.saveSuccessMsg'));
     }
     public function saveJobList($request)
     {
