@@ -60,9 +60,9 @@ class SaveJobRepository
         
         return $this->responseRepo->successResponse(new SaveJobCollection($saveJobList, $this->nextId), $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
-    public function saveJobDelete($saveJobId, $userId)
+    public function saveJobDelete($jobId, $userId)
     {
-        $job = SavedJob::where('id', $saveJobId)->where('client_user_id', $userId)->first();
+        $job = SavedJob::where('job_id', $jobId)->where('client_user_id', $userId)->first();
         
         if (!$job) {
             throw new NotFoundException(trans('message.notFoundMsg'));

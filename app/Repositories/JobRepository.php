@@ -37,34 +37,44 @@ class JobRepository extends BaseRepository
             $jobInfos = [];
         } 
         else{
-            $jobs = $this->model->select('id','title','salary','company_name','zone_id','photo','created_at')
+            $jobs = $this->model->select('id','title','client_user_id','salary','company_name','zone_id','photo','created_at')
                                     ->where(function ($query) {
                                                     if(  request()->nextId != 0 ){
                                                         $query->where('id', '<=',  request()->nextId);
                                                     } 
                                                 })
                                     ->orderBy('id', 'DESC')->limit($perPage + 1)->get();
+
+
             $totalCount = $jobs->count();
 
-            if ($totalCount > $perPage) {
+            if($totalCount != 0)
+            {
+                if ($totalCount > $perPage) {
 
-                $this->nextId = $jobs[$perPage]->id;
+                    $this->nextId = $jobs[$perPage]->id;
+        
+                    unset($jobs[$totalCount - 1]);
+                }
+                else{
+                    $this->nextId = null;
+                }
     
-                unset($jobs[$totalCount - 1]);
+                foreach($jobs as $key=> $value){
+                    $jobInfos[$key]['id'] = $value['id'];
+                    $jobInfos[$key]['userId'] = $value['client_user_id'];
+                    $jobInfos[$key]['title'] = $value['title'];
+                    $jobInfos[$key]['salary'] = $value['salary'];
+                    $jobInfos[$key]['companyName'] = $value['company_name'];
+                    $jobInfos[$key]['photo'] = (getFileUrlFromAkoneyaMedia($value['photo'])) ?? "";
+                    $jobInfos[$key]['location'] = config('zones.zoneSelections')[$value['zone_id']]['name'];
+                    $jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id',$clientUserId)->where('job_id',$value['id'])->first() != null)? true:false;
+                    $jobInfos[$key]['createdAt'] = strTo24hrFormat($value['created_at']);
+                }
             }
             else{
+                $jobInfos = [];
                 $this->nextId = null;
-            }
-
-            foreach($jobs as $key=> $value){
-                $jobInfos[$key]['id'] = $value['id'];
-                $jobInfos[$key]['title'] = $value['title'];
-                $jobInfos[$key]['salary'] = $value['salary'];
-                $jobInfos[$key]['companyName'] = $value['company_name'];
-                $jobInfos[$key]['photo'] = (getFileUrlFromAkoneyaMedia($value['photo'])) ?? "";
-                $jobInfos[$key]['location'] = config('zones.zoneSelections')[$value['zone_id']]['name'];
-                $jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id',$clientUserId)->where('job_id',$value['id'])->first() != null)? true:false;
-                $jobInfos[$key]['createdAt'] = strTo24hrFormat($value['created_at']);
             }
         }
         return $this->responseRepo->successResponse(['data' => $jobInfos,'pagination' => ['nextId' =>$this->nextId]], $this->responseRepo->successStatusCode, trans('message.successMsg'));
@@ -156,7 +166,6 @@ class JobRepository extends BaseRepository
         ]);
 
         $updatedInfo = $this->getJobById($id,$clientUserId);
-
      
         return $this->responseRepo->successResponse($this->getJobDetailResponse($updatedInfo, $clientUserId), $this->responseRepo->successStatusCode, trans('message.updateSuccessMsg'));
 
@@ -186,7 +195,7 @@ class JobRepository extends BaseRepository
     public function getJobDetailResponse($job,$clientUserId){
 
     
-        $getProfile=PersonalInformation::select('id','name','image')->where('client_user_id',$job->client_user_id)->first();
+        $getProfile=PersonalInformation::select('client_user_id','name','image')->where('client_user_id',$job->client_user_id)->first();
 
         $jobType = JobType::select('id','name')->where('id',$job->job_type)->first();
 
@@ -205,7 +214,7 @@ class JobRepository extends BaseRepository
             'description' => ($job->description)?? "",
             'requirement' => ($job->requirement) ?? "",
             'isSaved'=> (SavedJob::where('client_user_id',$clientUserId)->where('job_id', $job->id)->first() != null)? true:false,
-            'user'=> ['id'=> $getProfile->id, 'name'=> $getProfile->name, 'image'=>getFileUrlFromAkoneyaMedia($getProfile->image)],
+            'user'=> ['id'=> $getProfile->client_user_id, 'name'=> $getProfile->name, 'image'=>getFileUrlFromAkoneyaMedia($getProfile->image)],
             "createdAt"=> strTo24hrFormat($job->created_at)
         ];
         return $data;
