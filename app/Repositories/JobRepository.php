@@ -137,23 +137,19 @@ class JobRepository extends BaseRepository
         if(!$job){
             return $this->notFoundResponse();
         }
-        
-        if(request()->photo){
-            if(request()->photoDeleteStatus == "true"){
+
+        $mediaPath = "" ;
+
+        if(request()->photoDeleteStatus == "true"){
+            if(request()->photo){
                 deleteFileFromAkoneyaMedia($job->photo);
                 $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
             }
-            else{
-                $mediaPath = $job->photo;
-            }
         }
-        if($request->photoDeleteStatus == "true"){
-            deleteFileFromAkoneyaMedia($job->photo);
-            $mediaPath = "" ;
-        }else{
+        else{
             $mediaPath = $job->photo;
         }
-    
+
         $job->update([
             'title' => $request->title,
             'company_name' => $request->companyName,
