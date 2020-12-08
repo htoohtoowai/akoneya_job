@@ -5,18 +5,22 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\JobRepository;
+use App\Repositories\ZoneRepository;
+
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\UpdateJobRequest;
 
 class JobController extends Controller
 {
-    public function __construct(JobRepository $jobRepo)
+    public function __construct(JobRepository $jobRepo,ZoneRepository $zoneRepo)
     {
         $this->jobRepo = $jobRepo;
+        $this->zoneRepo = $zoneRepo;
+
     }
     public function getLocations()
     {
-        return $this->jobRepo->getZones();
+        return $this->zoneRepo->getZones();
     }
     public function getJobs(Request $request)
     {
