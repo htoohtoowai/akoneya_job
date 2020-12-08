@@ -147,7 +147,7 @@ class JobRepository extends BaseRepository
                 $mediaPath = $job->photo;
             }
         }
-        elseif($request->photoDeleteStatus == "true"){
+        if($request->photoDeleteStatus == "true"){
             deleteFileFromAkoneyaMedia($job->photo);
             $mediaPath = "" ;
         }else{
