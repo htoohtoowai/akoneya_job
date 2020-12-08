@@ -212,7 +212,7 @@ class JobRepository extends BaseRepository
             'location' => ['id'=>$this->zones[$job->zone_id]['id'],'name'=>$this->zones[$job->zone_id]['name']],
             'photo' => (getFileUrlFromAkoneyaMedia($job->photo))?? "",
             'phone' => explode(",",$job->phone),
-            'gender' => $job->gender,
+            'gender' => (int)$job->gender,
             'email' => ($job->email) ?? "",
             'address' => ($job->address) ?? "",
             'description' => ($job->description)?? "",
