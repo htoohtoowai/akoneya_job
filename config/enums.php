@@ -2,6 +2,7 @@
 
 return [
     'enablePublishStatus' => 1,
+    'enableDeleteStatus' => 0,
     'privacy' => [
     	'public' => 1,
     	'friend' => 2,

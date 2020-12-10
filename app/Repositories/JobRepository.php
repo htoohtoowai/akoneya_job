@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Job;
 use App\Models\JobType;
 use App\Repositories\ResponseRepository;
+use App\Repositories\SaveJobRepository;
 use App\PersonalInformation;
 use App\Exceptions\NotFoundException;
 use App\Models\SavedJob;
@@ -11,10 +12,11 @@ use App\Http\Resources\ZoneListResource;
 
 class JobRepository extends BaseRepository
 {
-    public function __construct(Job $model, ResponseRepository $responseRepo)
+    public function __construct(Job $model, ResponseRepository $responseRepo, SaveJobRepository $saveJobRepo)
     {
         $this->model = $model;
         $this->responseRepo = $responseRepo;
+        $this->saveJobRepo = $saveJobRepo;
         $this->successStatusCode = config('http_status.success');
         $this->perPage = config('enums.perPage');
         $this->jobMediaDirectory = config('media.job.directory');
@@ -25,29 +27,35 @@ class JobRepository extends BaseRepository
   
     public function getJobs($request, $perPage, $clientUserId)
     {
-
-        if ( request()->nextId == "" ||  request()->nextId == 'null'){
+        if (request()->nextId == "" ||  request()->nextId == 'null') {
             $this->jobInfos = [];
-        } 
-        else{
-            $jobs = $this->model->select('id','title','client_user_id','salary','company_name','zone_id','photo','created_at')
+        } else {
+            $jobs = $this->model->select('id', 'title', 'client_user_id', 'salary', 'company_name', 'zone_id', 'job_type', 'photo', 'created_at')
                                 ->where(function ($query) {
-                                                if(  request()->nextId != 0 ){
-                                                    $query->where('id', '<=',  request()->nextId);
-                                                } 
-                                            })
+                                    if (request()->nextId != 0) {
+                                        $query->where('id', '<=', request()->nextId);
+                                    }
+                                    if (request()->title) {
+                                        $query->where('title', 'LIKE', '%'.request()->title.'%');
+                                    }
+                                    if (request()->location) {
+                                        $query->where('zone_id', request()->location);
+                                    }
+                                    if (request()->jobType) {
+                                        $query->where('job_type', request()->jobType);
+                                    }
+                                })
                                 ->orderBy('id', 'DESC')->limit($perPage + 1)->get();
 
             $totalCount = $jobs->count();
 
             if ($totalCount > $perPage) {
-
                 $this->nextId = $jobs[$perPage]->id;
     
                 unset($jobs[$totalCount - 1]);
             }
             
-            foreach($jobs as $key=> $value){
+            foreach ($jobs as $key=> $value) {
                 $this->jobInfos[$key]['id'] = $value['id'];
                 $this->jobInfos[$key]['userId'] = $value['client_user_id'];
                 $this->jobInfos[$key]['title'] = $value['title'];
@@ -55,37 +63,19 @@ class JobRepository extends BaseRepository
                 $this->jobInfos[$key]['companyName'] = $value['company_name'];
                 $this->jobInfos[$key]['photo'] = (getFileUrlFromAkoneyaMedia($value['photo'])) ?? "";
                 $this->jobInfos[$key]['location'] = $this->zones[$value['zone_id']]['name'];
-                $this->jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id',$clientUserId)->where('job_id',$value['id'])->first() != null)? true:false;
+                $this->jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $value['id'])->first() != null)? true:false;
                 $this->jobInfos[$key]['createdAt'] = strTo24hrFormat($value['created_at']);
             }
-            
         }
         return $this->responseRepo->successResponse(['data' => $this->jobInfos,'pagination' => ['nextId' =>$this->nextId]], $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
     public function createJob($request, $clientUserId)
-    {    
-
-        $jobType = JobType::where('id',$request->jobType)->first();
-
-        $message = null;
-
-        if(!in_array( $request->location,range(1,15))){
-            $message = trans('message.locationNotFound');
-        }
-        elseif(!in_array( $request->gender,range(1,3))){
-            $message = trans('message.genderNotFound');
-        }
-        elseif($jobType==null){
-            $message = trans('message.jobTypeNotFound');
-        }
-
-        if($message != null){
-            return $this->responseRepo->failResponse(null, $this->responseRepo->notFoundStatusCode, $message);
-        }
-
-        if($request->photo){
+    {
+        $this->checkValidation($request);
+       
+        if ($request->photo) {
             $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
-        }else{
+        } else {
             $mediaPath = "" ;
         }
 
@@ -106,47 +96,30 @@ class JobRepository extends BaseRepository
         ]);
 
         return $this->responseRepo->successResponse($this->getJobDetailResponse($job, $clientUserId), $this->responseRepo->createStatusCode, trans('message.createSuccessMsg'));
-
     }
-    public function getJobById($id,$clientUserId){
-        return $this->model->where('id',$id)->where('client_user_id',$clientUserId)->first(); 
-    } 
-   
-    public function updateJob($request,$id,$clientUserId)
+    public function getJobById($id, $clientUserId)
     {
+        $job = $this->model->where('id', $id)->where('client_user_id', $clientUserId)->first();
+        if (!$job) {
+            throw new NotFoundException(trans('message.notFoundMsg'));
+        }
+        return $job;
+    }
+   
+    public function updateJob($request, $id, $clientUserId)
+    {
+        $job = $this->getJobById($id, $clientUserId);
         
-        $jobType = JobType::where('id',$request->jobType)->first();
-
-        $message = null;
-
-        if(!in_array( $request->location,range(1,15))){
-            $message = trans('message.locationNotFound');
-        }
-        elseif(!in_array( $request->gender,range(1,3))){
-            $message = trans('message.genderNotFound');
-        }
-        elseif($jobType==null){
-            $message = trans('message.jobTypeNotFound');
-        }
-
-        if($message != null){
-            return $this->responseRepo->failResponse(null, $this->responseRepo->notFoundStatusCode, $message);
-        }
-
-        $job = $this->getJobById($id,$clientUserId);
-        if(!$job){
-            return $this->notFoundResponse();
-        }
+        $this->checkValidation($request);
 
         $mediaPath = "" ;
 
-        if(request()->photoDeleteStatus == "true"){
+        if (request()->photoDeleteStatus == "true") {
             deleteFileFromAkoneyaMedia($job->photo);
-            if(request()->photo){
+            if (request()->photo) {
                 $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
             }
-        }
-        else{
+        } else {
             $mediaPath = $job->photo;
         }
 
@@ -165,39 +138,35 @@ class JobRepository extends BaseRepository
             'photo' => $mediaPath,
         ]);
 
-        $updatedInfo = $this->getJobById($id,$clientUserId);
+        $updatedInfo = $this->getJobById($id, $clientUserId);
      
         return $this->responseRepo->successResponse($this->getJobDetailResponse($updatedInfo, $clientUserId), $this->responseRepo->successStatusCode, trans('message.updateSuccessMsg'));
-
     }
-    public function deleteJob($id,$clientUserId)
+    public function deleteJob($id, $clientUserId)
     {
-        $job = $this->getJobById($id,$clientUserId);
-        if(!$job){
-            return $this->notFoundResponse();
-        }
+        $job = $this->getJobById($id, $clientUserId);
+
         deleteFileFromAkoneyaMedia($job->photo);
         $job->delete();
 
-        return $this->responseRepo->successResponse( null, $this->responseRepo->successStatusCode, trans('message.deleteSuccessMsg'));
-
+        return $this->responseRepo->successResponse(null, $this->responseRepo->successStatusCode, trans('message.deleteSuccessMsg'));
     }
-    public function getDetails($id,$clientUserId){
-
-        $job = $this->model->where('id',$id)->first();
-        if(!$job){
-            return $this->notFoundResponse();
+    public function getDetails($id, $clientUserId)
+    {
+        $job = $this->saveJobRepo->jobFind($id);
+       
+        if (!$job) {
+            throw new NotFoundException(trans('message.notFoundMsg'));
         }
 
         return $this->responseRepo->successResponse($this->getJobDetailResponse($job, $clientUserId), $this->responseRepo->successStatusCode, trans('message.successMsg'));
-    } 
+    }
 
-    public function getJobDetailResponse($job,$clientUserId){
+    public function getJobDetailResponse($job, $clientUserId)
+    {
+        $getProfile=PersonalInformation::select('client_user_id', 'name', 'image')->where('client_user_id', $job->client_user_id)->first();
 
-    
-        $getProfile=PersonalInformation::select('client_user_id','name','image')->where('client_user_id',$job->client_user_id)->first();
-
-        $jobType = JobType::select('id','name')->where('id',$job->job_type)->first();
+        $jobType = JobType::select('id', 'name')->where('id', $job->job_type)->first();
 
         return  [
             'id' => $job->id,
@@ -207,19 +176,29 @@ class JobRepository extends BaseRepository
             'companyName' => $job->company_name,
             'location' => ['id'=>$this->zones[$job->zone_id]['id'],'name'=>$this->zones[$job->zone_id]['name']],
             'photo' => (getFileUrlFromAkoneyaMedia($job->photo))?? "",
-            'phone' => explode(",",$job->phone),
+            'phone' => explode(",", $job->phone),
             'gender' => (int)$job->gender,
             'email' => ($job->email) ?? "",
             'address' => ($job->address) ?? "",
             'description' => ($job->description)?? "",
             'requirement' => ($job->requirement) ?? "",
-            'isSaved'=> (SavedJob::where('client_user_id',$clientUserId)->where('job_id', $job->id)->first() != null)? true:false,
+            'isSaved'=> (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $job->id)->first() != null)? true:false,
             'user'=> ['id'=> $getProfile->client_user_id, 'name'=> $getProfile->name, 'image'=>getFileUrlFromAkoneyaMedia($getProfile->image)],
             "createdAt"=> strTo24hrFormat($job->created_at)
         ];
-    } 
-    public function notFoundResponse(){
-        return $this->responseRepo->failResponse(null, $this->responseRepo->notFoundStatusCode, trans('message.notFoundMsg'));
     }
 
+    public function checkValidation($request)
+    {
+        $jobType = JobType::where('id', $request->jobType)->where('deleted_status', config('enums.enableDeleteStatus'))->first();
+        if (!in_array($request->location, range(1, 15))) {
+            throw new NotFoundException(trans('message.locationNotFound'));
+        }
+        if (!in_array($request->gender, range(1, 3))) {
+            throw new NotFoundException(trans('message.genderNotFound'));
+        }
+        if (!$jobType) {
+            throw new NotFoundException(trans('message.jobTypeNotFound'));
+        }
+    }
 }
