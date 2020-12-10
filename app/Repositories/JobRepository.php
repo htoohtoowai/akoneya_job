@@ -114,13 +114,11 @@ class JobRepository extends BaseRepository
 
         $mediaPath = "" ;
 
-        if (request()->photoDeleteStatus == "true") {
-            deleteFileFromAkoneyaMedia($job->photo);
-            if (request()->photo) {
-                $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
+        if(request()->photo) {
+            $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
+            if (request()->photoDeleteStatus == "true" && $job->photo != null) {
+                deleteFileFromAkoneyaMedia($job->photo);
             }
-        } else {
-            $mediaPath = $job->photo;
         }
 
         $job->update([
