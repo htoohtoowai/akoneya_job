@@ -63,7 +63,7 @@ class JobRepository extends BaseRepository
                 $this->jobInfos[$key]['companyName'] = $value['company_name'];
                 $this->jobInfos[$key]['photo'] = (getFileUrlFromAkoneyaMedia($value['photo'])) ?? "";
                 $this->jobInfos[$key]['location'] = $this->zones[$value['zone_id']]['name'];
-                $this->jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $value['id'])->first() != null)? true:false;
+                $this->jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $value['id'])->first() != null);
                 $this->jobInfos[$key]['createdAt'] = strTo24hrFormat($value['created_at']);
             }
         }
@@ -182,7 +182,7 @@ class JobRepository extends BaseRepository
             'address' => ($job->address) ?? "",
             'description' => ($job->description)?? "",
             'requirement' => ($job->requirement) ?? "",
-            'isSaved'=> (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $job->id)->first() != null)? true:false,
+            'isSaved'=> (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $job->id)->first() != null),
             'user'=> ['id'=> $getProfile->client_user_id, 'name'=> $getProfile->name, 'image'=>getFileUrlFromAkoneyaMedia($getProfile->image)],
             "createdAt"=> strTo24hrFormat($job->created_at)
         ];
