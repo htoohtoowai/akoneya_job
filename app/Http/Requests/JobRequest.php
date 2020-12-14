@@ -26,14 +26,17 @@ class JobRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required',
-            'companyName' => 'required|max:3000',
+            'title' => 'required|max:100',
+            'companyName' => 'required|max:100',
             'jobType' => 'required',
             'location' => 'required',
-            'salary' => 'required',
-            'address' => 'required',
-            'phone' => 'required',
+            'salary' => 'required|max:100',
+            'address' => 'required|max:200',
+            'phone' => 'required|max:50',
+            'email' => 'email|max:50',
             'gender' => 'required',
+            'description' => 'max:500',
+            'requirement' => 'max:500'
         ];
     }
     protected function failedValidation(Validator $validator)
@@ -43,6 +46,6 @@ class JobRequest extends FormRequest
             'result' => null,
             'statusCode' => config('http_status.badRequest'),
             'message' => $errors->first(),
-        ],config('http_status.badRequest')));
+        ], config('http_status.badRequest')));
     }
 }
