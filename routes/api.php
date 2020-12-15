@@ -30,3 +30,4 @@ Route::group(['middleware' => 'localization'], function () {
         });
     });
 });
+

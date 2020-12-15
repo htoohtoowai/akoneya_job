@@ -144,7 +144,8 @@ class JobTest extends TestCase
             'gender' => config('mock_data.genderId'),
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
-            'requirement' => config('mock_data.requirement')
+            'requirement' => config('mock_data.requirement'),
+            'photoDeleteStatus'=>true
         ];
 
         $response = $this->json('POST', 'api/jobs/'.$job->id, $requestBody, $headers);
