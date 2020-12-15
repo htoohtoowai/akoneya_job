@@ -23,6 +23,8 @@ class JobRepository extends BaseRepository
         $this->nextId = null;
         $this->zones = config('zones.zoneSelections');
         $this->jobInfos = [];
+        $this->bannedStatus = 'banned_status';
+        $this->disableBannedStatus = config('enums.disableBannedStatus');
     }
   
     public function getJobs($request, $perPage, $clientUserId)
@@ -44,6 +46,7 @@ class JobRepository extends BaseRepository
                                     if (request()->jobType) {
                                         $query->where('job_type', request()->jobType);
                                     }
+                                    $query->where($this->bannedStatus, $this->disableBannedStatus);
                                 })
                                 ->orderBy('id', 'DESC')->limit($perPage + 1)->get();
 
@@ -99,7 +102,9 @@ class JobRepository extends BaseRepository
     }
     public function getJobById($id, $clientUserId)
     {
-        $job = $this->model->where('id', $id)->where('client_user_id', $clientUserId)->first();
+        $job = $this->model->where('id', $id)
+                            ->where('client_user_id', $clientUserId)
+                            ->where($this->bannedStatus, $this->disableBannedStatus)->first();
         if (!$job) {
             throw new NotFoundException(trans('message.notFoundMsg'));
         }

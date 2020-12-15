@@ -15,6 +15,8 @@ class SaveJobRepository
         $this->responseRepo = $responseRepo;
         $this->perPage = config('enums.perPage');
         $this->nextId = null;
+        $this->bannedStatus = 'banned_status';
+        $this->disableBannedStatus = config('enums.disableBannedStatus');
     }
     public function saveJob($jobId, $userId)
     {
@@ -71,6 +73,6 @@ class SaveJobRepository
     }
     public function jobFind($jobId)
     {
-        return Job::find($jobId);
+        return Job::where('id', $jobId)->where($this->bannedStatus, $this->disableBannedStatus)->first();
     }
 }

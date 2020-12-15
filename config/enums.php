@@ -3,6 +3,8 @@
 return [
     'enablePublishStatus' => 1,
     'enableDeleteStatus' => 0,
+    'disableDeletedStatus' => 0,
+    'disableBannedStatus' => 0,
     'privacy' => [
     	'public' => 1,
     	'friend' => 2,
@@ -26,7 +28,6 @@ return [
     'followedStatus' => true,
     'unFollowedStatus' => false,
     'perPage' => 10,
-    'disableDeletedStatus' => 0,
     'reportType' => [
     	'profile' => 1,
     	'newsfeed' => 2
