@@ -119,7 +119,7 @@ class JobRepository extends BaseRepository
 
         $mediaPath = "";
 
-        if(request()->photo == null && request()->photoDeleteStatus == null ) {
+        if(request()->photo == null && request()->photoDeleteStatus == null || request()->photoDeleteStatus == "false" ) {
             if($job->photo){
                 $mediaPath = $job->photo ;
             }
@@ -127,9 +127,6 @@ class JobRepository extends BaseRepository
         if(request()->photo == null && request()->photoDeleteStatus == "true") {
             deleteFileFromAkoneyaMedia($job->photo);
             $mediaPath = "" ;
-        }
-        if(request()->photo == null && request()->photoDeleteStatus == "false" ) {
-            $mediaPath = $job->photo ;
         }
         if(request()->photo) {
             $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
