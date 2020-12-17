@@ -10,9 +10,7 @@ class LocationTest extends TestCase
 {
     public function testGetLocationListSuccessfully()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->get('api/locations', $headers);
+        $response = $this->get('api/locations', $this->headers);
         
         $response->assertOk();
 

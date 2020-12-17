@@ -10,9 +10,7 @@ class SaveJobTest extends TestCase
 {
     public function testSaveJobSuccessfully()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->get("api/jobs/".$this->job->id."/save", $headers);
+        $response = $this->get("api/jobs/".$this->job->id."/save", $this->headers);
 
         $response->assertCreated();
 
@@ -31,9 +29,7 @@ class SaveJobTest extends TestCase
 
     public function testSaveJobFailed_WhenJobIdIsInvalid()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->get("api/jobs/".config('mock_data.invalidJobId')."/save", $headers);
+        $response = $this->get("api/jobs/".config('mock_data.invalidJobId')."/save", $this->headers);
 
         $response->assertStatus(400);
         
@@ -51,9 +47,7 @@ class SaveJobTest extends TestCase
 
     public function testGetSavedJobListSuccessfully()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->get("api/saveJobs?nextId=0", $headers);
+        $response = $this->get("api/saveJobs?nextId=0", $this->headers);
 
         $response->assertOk();
 
@@ -92,9 +86,7 @@ class SaveJobTest extends TestCase
 
     public function testDeleteSavedJobSuccessfully()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->json('Delete', 'api/savedJobs/'.$this->savedJob->job_id, [], $headers);
+        $response = $this->json('Delete', 'api/savedJobs/'.$this->savedJob->job_id, [], $this->headers);
 
         $response->assertOk();
 
@@ -113,9 +105,7 @@ class SaveJobTest extends TestCase
 
     public function testDeleteSavedJobFailed()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->json('Delete', 'api/savedJobs/'.config('mock_data.invalidJobId'), [], $headers);
+        $response = $this->json('Delete', 'api/savedJobs/'.config('mock_data.invalidJobId'), [], $this->headers);
 
         $response->assertStatus(400);
         

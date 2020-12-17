@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication, DatabaseMigrations;
 
-    protected $user, $personalInfo, $token, $jobType, $job, $savedJob, $zones;
+    protected $user, $personalInfo, $token, $headers, $jobType, $job, $savedJob, $zones;
 
     public function setUp(): void
     {
@@ -25,6 +25,7 @@ abstract class TestCase extends BaseTestCase
         $this->user = $this->createUser();
         $this->personalInfo = $this->createPersonalInformation($this->user);
         $this->token = JWTAuth::fromUser($this->user);
+        $this->headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
         $this->jobType = $this->createJobType();
         $this->job = $this->createJob($this->user->id, $this->jobType->id);
         $this->savedJob = $this->createSavedJob($this->job->id, $this->user->id);

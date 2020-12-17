@@ -11,9 +11,7 @@ class JobTest extends TestCase
 {
     public function testGetJobTypeListSuccessfully()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->get('api/jobTypes', $headers);
+        $response = $this->get('api/jobTypes', $this->headers);
         
         $response->assertOk();
 
@@ -39,9 +37,7 @@ class JobTest extends TestCase
 
     public function testGetJobListSuccessfully()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
-        $response = $this->json('GET', 'api/jobs?nextId=0', [], $headers);
+        $response = $this->json('GET', 'api/jobs?nextId=0', [], $this->headers);
         
         $response->assertOk();
 
@@ -84,8 +80,6 @@ class JobTest extends TestCase
 
         $this->createPersonalInformation($this->user->id);  
 
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
@@ -101,7 +95,7 @@ class JobTest extends TestCase
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement')
         ];
-        $response = $this->json('POST', 'api/jobs', $requestBody, $headers);
+        $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
      
         $response->assertCreated();
 
@@ -116,33 +110,7 @@ class JobTest extends TestCase
         $this->assertIsInt($content["result"]["id"]);
 
         $response->assertJson([
-            "result" => [
-                "title" => config("mock_data.name"),
-                "salary" => config("mock_data.salary"),
-                "jobType" => [
-                    "id" => $content["result"]['jobType']['id'],
-                    "name" => $content["result"]['jobType']['name']
-                ],
-                "companyName" => config("mock_data.companyName"),
-                "location" => [
-                    "id" => $content["result"]['location']['id'],
-                    "name" => $content["result"]['location']['name']
-                ],
-                "description" => config("mock_data.description"),
-                "phone" => $content["result"]['phone'],
-                'photo' => $content["result"]['photo'],
-                "gender" => config("mock_data.genderId"),
-                "email" => config("mock_data.email"),
-                "address" => config("mock_data.address"),
-                "description" => config("mock_data.jobDescription"),
-                "requirement" => config("mock_data.requirement"),
-                "user" => [
-                    "id" => $content["result"]['user']['id'],
-                    "name" => $content["result"]['user']['name'],
-                    "image" => $content["result"]['user']['image']
-                ],
-                "createdAt" => $content["result"]['createdAt']
-            ],
+            "result" => $this->prepareJobResponseResource($content),
             "statusCode"=>config('http_status.created'),
             "message" => trans('message.createSuccessMsg')
         ]);
@@ -151,8 +119,6 @@ class JobTest extends TestCase
     public function testCreateJobFailed()
     {
         $this->createPersonalInformation($this->user->id);  
-
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
 
         $requestBody = [
             'title' => null,
@@ -169,7 +135,7 @@ class JobTest extends TestCase
             'requirement' => null
         ];
 
-        $response = $this->json('POST', 'api/jobs', $requestBody, $headers);
+        $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
         
         $response->assertStatus(400);
         
@@ -189,8 +155,6 @@ class JobTest extends TestCase
     {
         $this->createPersonalInformation($this->user->id);
 
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
@@ -207,7 +171,7 @@ class JobTest extends TestCase
             'photoDeleteStatus' => true
         ];
 
-        $response = $this->json('POST', 'api/jobs/'.$this->job->id, $requestBody, $headers);
+        $response = $this->json('POST', 'api/jobs/'.$this->job->id, $requestBody, $this->headers);
 
         $response->assertOk();
         
@@ -220,32 +184,7 @@ class JobTest extends TestCase
         $content = $response->decodeResponseJson();
 
         $response->assertJson([
-            "result" => [
-                "title" => config("mock_data.name"),
-                "salary" => config("mock_data.salary"),
-                "jobType" => [
-                    "id" => $content["result"]['jobType']['id'],
-                    "name" => $content["result"]['jobType']['name']
-                ],
-                "companyName" => config("mock_data.companyName"),
-                "location" => [
-                    "id" => $content["result"]['location']['id'],
-                    "name" => $content["result"]['location']['name']
-                ],
-                "description" => config("mock_data.description"),
-                "phone" => $content["result"]['phone'],
-                "gender" => config("mock_data.genderId"),
-                "email" => config("mock_data.email"),
-                "address" => config("mock_data.address"),
-                "description" => config("mock_data.jobDescription"),
-                "requirement" => config("mock_data.requirement"),
-                "user" => [
-                    "id" => $content["result"]['user']['id'],
-                    "name" => $content["result"]['user']['name'],
-                    "image" => $content["result"]['user']['image']
-                ],
-                "createdAt" => $content["result"]['createdAt']
-            ],
+            "result" => $this->prepareJobResponseResource($content),
             "statusCode" => config('http_status.success'),
             "message" => trans('message.updateSuccessMsg')
         ]);
@@ -253,8 +192,6 @@ class JobTest extends TestCase
 
     public function testUpdateJobFailed_WhenJobIdIsInvalid()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
@@ -271,7 +208,7 @@ class JobTest extends TestCase
             'photoDeleteStatus' => true
         ];
 
-        $response = $this->json('POST', 'api/jobs/'.config('mock_data.invalidJobId'), $requestBody, $headers);
+        $response = $this->json('POST', 'api/jobs/'.config('mock_data.invalidJobId'), $requestBody, $this->headers);
 
         $response->assertStatus(400);
         
@@ -291,9 +228,7 @@ class JobTest extends TestCase
     {
         $this->createPersonalInformation($this->user->id);
 
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-      
-        $response = $this->json('Delete', 'api/jobs/'.$this->job->id, [], $headers);
+        $response = $this->json('Delete', 'api/jobs/'.$this->job->id, [], $this->headers);
         
         $response->assertOk();
         
@@ -312,9 +247,7 @@ class JobTest extends TestCase
 
     public function testDeleteJobFailed_WhenJobIdIsInvalid()
     {
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-      
-        $response = $this->json('Delete', 'api/jobs/'.config('mock_data.invalidJobId'), [], $headers);
+        $response = $this->json('Delete', 'api/jobs/'.config('mock_data.invalidJobId'), [], $this->headers);
         
         $response->assertStatus(400);
         
@@ -328,5 +261,35 @@ class JobTest extends TestCase
             "statusCode" => config('http_status.badRequest'),
             "message" =>  trans('message.notFoundMsg')
         ]);
+    }
+
+    public function prepareJobResponseResource($content)
+    {
+        return [
+            "title" => config("mock_data.name"),
+            "salary" => config("mock_data.salary"),
+            "jobType" => [
+                "id" => $content["result"]['jobType']['id'],
+                "name" => $content["result"]['jobType']['name']
+            ],
+            "companyName" => config("mock_data.companyName"),
+            "location" => [
+                "id" => $content["result"]['location']['id'],
+                "name" => $content["result"]['location']['name']
+            ],
+            "description" => config("mock_data.description"),
+            "phone" => $content["result"]['phone'],
+            "gender" => config("mock_data.genderId"),
+            "email" => config("mock_data.email"),
+            "address" => config("mock_data.address"),
+            "description" => config("mock_data.jobDescription"),
+            "requirement" => config("mock_data.requirement"),
+            "user" => [
+                "id" => $content["result"]['user']['id'],
+                "name" => $content["result"]['user']['name'],
+                "image" => $content["result"]['user']['image']
+            ],
+            "createdAt" => $content["result"]['createdAt']
+        ];
     }
 }
