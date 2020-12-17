@@ -33,7 +33,7 @@ class UpdateJobRequest extends FormRequest
             'salary' => 'required|max:100',
             'address' => 'required|max:200',
             'phone' => 'required|max:50',
-            'email' => 'email|max:50',
+            'email' => 'max:50',
             'gender' => 'required',
             'description' => 'max:500',
             'requirement' => 'max:500'
