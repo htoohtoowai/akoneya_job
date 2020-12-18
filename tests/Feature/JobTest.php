@@ -6,136 +6,138 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
-use JWTAuth;
-use App\User;
-use App\PersonalInformation;
-
-use App\Models\Job;
-use App\Models\JobType;
 
 class JobTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function testJobList()
+    private $personalInfo, $jobType, $job, $zones;
+
+    public function setUp(): void
     {
-        $user = $this->createUser();
-        $token = JWTAuth::fromUser($user);
-        $jobType = $this->createJobType();
+        parent::setUp();    
 
-        $job = $this->createJob($user->id,$jobType->id);
-                                               
-                                       
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
-
-
-        $response = $this->json('GET', 'api/jobs', [], $headers);
-        
-        $response->assertStatus(200);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
-
-        $response->assertJson([
-            "statusCode" => config('http_status.success'),
-            "message" => trans('message.successMsg')
-        ]);
+        $this->personalInfo = $this->createPersonalInformation($this->user->id);
+        $this->jobType = $this->createJobType();
+        $this->job = $this->createJob($this->user->id, $this->jobType->id);
+        $this->zones = config('zones.zoneSelections');
     }
 
-    public function testCreatedJob()
+    public function testGetJobTypeListSuccessfully()
     {
-        $user = $this->createUser();
-        $this->createPersonalInformation($user->id);
-        $token = JWTAuth::fromUser($user);
+        $response = $this->get('api/jobTypes', $this->headers);
+        
+        $response->assertOk();
 
-        $jobType = $this->createJobType();
-                                                                        
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
+        $response->assertJsonStructure($this->jsonStructureWithResultArray(["jobTypes"]));
+
+        $response->assertJson($this->successJson(
+            [ 
+                "jobTypes" => [
+                    [
+                        "id" => $this->jobType->id,
+                        "name"=> $this->jobType->name,
+                    ]
+                ]
+            ], $this->successStatusCode, $this->successMsg));
+    }
+
+    public function testGetJobListSuccessfully()
+    {
+        $response = $this->json('GET', 'api/jobs?nextId=0', [], $this->headers);
+        
+        $response->assertOk();
+
+        $response->assertJsonStructure($this->jsonStructureWithPagination());
+
+        $response->assertJson($this->successJson(
+            [
+                "data" =>[
+                    [
+                        "id" => $this->job->id,
+                        "userId"=> $this->user->id,
+                        "title" => $this->job->title,
+                        "salary" => $this->job->salary,
+                        "companyName" => $this->job->company_name,
+                        "photo" => getFileUrlFromAkoneyaMedia($this->job->photo),
+                        "location" => $this->zones[$this->job->zone_id]['name'],
+                        "isSaved" => false,
+                        "createdAt" => strTo24hrFormat($this->job->created_at)
+                    ]
+                ],
+                "pagination" => [
+                    "nextId" => null
+                ]
+            ], $this->successStatusCode, $this->successMsg));
+          
+    }
+
+    public function testCreateJobSuccessfully()
+    {
+        $image = UploadedFile::fake()->create('fake-photo.png');
 
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
-            'jobType' => $jobType->id,
+            'jobType' => $this->jobType->id,
             'location' => config('mock_data.locationId'),
             'description' => config('mock_data.description'),
             'salary' => config('mock_data.salary'),
             'address' => config('mock_data.address'),
             'phone' => config('mock_data.phone'),
+            'photo' => $image,
             'gender' => config('mock_data.genderId'),
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement')
         ];
+        $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
+     
+        $response->assertCreated();
 
-        $response = $this->json('POST', 'api/jobs', $requestBody, $headers);
-        
-        $response->assertStatus(201);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
+    
+        $content = $response->decodeResponseJson();
 
-        $response->assertJson([
-            "statusCode" => config('http_status.created'),
-            "message" => trans('message.createSuccessMsg')
-        ]);
+        $this->assertIsInt($content["result"]["id"]);
+
+        $response->assertJson(
+            $this->successJson($this->prepareJobResponseResource($content), $this->createStatusCode, trans('message.createSuccessMsg'))
+        );
     }
 
-    public function testDeletedJob()
+    public function testCreateJobFailed()
     {
-        $user = $this->createUser();
-        $this->createPersonalInformation($user->id);
+        $this->createPersonalInformation($this->user->id);  
 
-        $token = JWTAuth::fromUser($user);
+        $requestBody = [
+            'title' => null,
+            'companyName' => null,
+            'jobType' => null,
+            'location' => null,
+            'description' => null,
+            'salary' => null,
+            'address' => null,
+            'phone' => null,
+            'gender' => null,
+            'email' => null,
+            'description' => null,
+            'requirement' => null
+        ];
 
-        $jobType = $this->createJobType();
+        $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
+        
+        $response->assertStatus($this->badRequestStatusCode);
 
-        $job = $this->createJob($user->id,$jobType->id);
-                                               
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
+        $response->assertJsonStructure($this->jsonStructure());
       
-        $response = $this->json('Delete', 'api/jobs/'.$job->id, [], $headers);
-        
-        $response->assertStatus(200);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
-
-        $response->assertJson([
-            "statusCode" => config('http_status.success'),
-            "message" => trans('message.deleteSuccessMsg')
-        ]);
+        $response->assertJson($this->failedJsonForValidation());
     }
 
-    public function testUpdatedJob()
+    public function testUpdateJobSuccessfully()
     {
-        $user = $this->createUser();
-        $this->createPersonalInformation($user->id);
-
-        $token = JWTAuth::fromUser($user);
-        $jobType = $this->createJobType();
-
-        $job = $this->createJob($user->id,$jobType->id);
-
-                                                                        
-        $headers = ['Accept' => 'application/json','Authorization' => "Bearer $token"];
-
-
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
-            'jobType' => $jobType->id,
+            'jobType' => $this->jobType->id,
             'location' => config('mock_data.locationId'),
             'description' => config('mock_data.description'),
             'salary' => config('mock_data.salary'),
@@ -145,54 +147,29 @@ class JobTest extends TestCase
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement'),
-            'photoDeleteStatus'=>true
+            'photoDeleteStatus' => true
         ];
 
-        $response = $this->json('POST', 'api/jobs/'.$job->id, $requestBody, $headers);
+        $response = $this->json('POST', 'api/jobs/'.$this->job->id, $requestBody, $this->headers);
 
-        $response->assertStatus(200);
+        $response->assertOk();
         
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
 
-        $response->assertJson([
-            "statusCode" => config('http_status.success'),
-            "message" => trans('message.updateSuccessMsg')
-        ]);
+        $content = $response->decodeResponseJson();
+
+        $response->assertJson(
+            $this->successJson($this->prepareJobResponseResource($content), $this->successStatusCode, trans('message.updateSuccessMsg'))
+        );
     }
 
-    public function createUser()
+    public function testUpdateJobFailed_WhenJobIdIsInvalid()
     {
-        return User::create([
-            'name' => config('mock_data.name'),
-            'email' => config('mock_data.email'),
-            'login_type' => config('mock_data.emailLoginType'),
-            'active_status' => "active",
-            'password' => bcrypt(config('mock_data.password'))
-        ]);
-    }
-
-    public function createPersonalInformation($userId)
-    {
-        return PersonalInformation::create([
-            'client_user_id' => $userId,
-            'name' => config('mock_data.name'),
-            'email' => config('mock_data.email'),
-            'image' => config('mock_data.coverPhotoUrl'),
-        ]);
-
-    }
-    public function createJob($userId,$jobType)
-    {
-        return Job::create([
-            'client_user_id' => $userId,
+        $requestBody = [
             'title' => config('mock_data.name'),
-            'company_name' => config('mock_data.companyName'),
-            'job_type' => $jobType,
-            'zone_id' => config('mock_data.locationId'),
+            'companyName' => config('mock_data.companyName'),
+            'jobType' => $this->jobType->id,
+            'location' => config('mock_data.locationId'),
             'description' => config('mock_data.description'),
             'salary' => config('mock_data.salary'),
             'address' => config('mock_data.address'),
@@ -200,14 +177,70 @@ class JobTest extends TestCase
             'gender' => config('mock_data.genderId'),
             'email' => config('mock_data.email'),
             'description' => config('mock_data.jobDescription'),
-            'requirement' => config('mock_data.requirement')
-        ]);
+            'requirement' => config('mock_data.requirement'),
+            'photoDeleteStatus' => true
+        ];
+
+        $response = $this->json('POST', 'api/jobs/'.config('mock_data.invalidJobId'), $requestBody, $this->headers);
+
+        $response->assertStatus($this->badRequestStatusCode);
+
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJson());
+    }
+ 
+    public function testDeleteJobSuccessfully()
+    {
+        $response = $this->json('Delete', 'api/jobs/'.$this->job->id, [], $this->headers);
+        
+        $response->assertOk();
+        
+        $response->assertJsonStructure($this->jsonStructure());
+
+        $response->assertJson(
+            $this->successJson(null, $this->successStatusCode, trans('message.deleteSuccessMsg'))
+        );
     }
 
-    public function createJobType()
+    public function testDeleteJobFailed_WhenJobIdIsInvalid()
     {
-        return JobType::create([
-            'name' => config('mock_data.name'),
-        ]);
+        $response = $this->json('Delete', 'api/jobs/'.config('mock_data.invalidJobId'), [], $this->headers);
+        
+        $response->assertStatus($this->badRequestStatusCode);
+
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJson());
+    }
+
+    public function prepareJobResponseResource($content)
+    {
+        return [
+            "title" => config("mock_data.name"),
+            "salary" => config("mock_data.salary"),
+            "jobType" => [
+                "id" => $content["result"]['jobType']['id'],
+                "name" => $content["result"]['jobType']['name']
+            ],
+            "companyName" => config("mock_data.companyName"),
+            "location" => [
+                "id" => $content["result"]['location']['id'],
+                "name" => $content["result"]['location']['name']
+            ],
+            "description" => config("mock_data.description"),
+            "phone" => $content["result"]['phone'],
+            "gender" => config("mock_data.genderId"),
+            "email" => config("mock_data.email"),
+            "address" => config("mock_data.address"),
+            "description" => config("mock_data.jobDescription"),
+            "requirement" => config("mock_data.requirement"),
+            "user" => [
+                "id" => $content["result"]['user']['id'],
+                "name" => $content["result"]['user']['name'],
+                "image" => $content["result"]['user']['image']
+            ],
+            "createdAt" => $content["result"]['createdAt']
+        ];
     }
 }
