@@ -46,12 +46,7 @@ class JobTest extends TestCase
         
         $response->assertOk();
 
-        $response->assertJsonStructure($this->jsonStructureWithResultArray(
-            [
-                "data",
-                "pagination"
-            ]
-        ));
+        $response->assertJsonStructure($this->jsonStructureWithPagination());
 
         $response->assertJson($this->successJson(
             [

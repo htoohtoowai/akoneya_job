@@ -30,7 +30,7 @@ abstract class TestCase extends BaseTestCase
         $this->successStatusCode = config('http_status.success');
         $this->badRequestStatusCode = config('http_status.badRequest');
         $this->createStatusCode = config('http_status.created');
-        
+
         $this->successMsg = trans('message.successMsg');
         $this->notFoundMsg = trans('message.notFoundMsg');
     }
@@ -107,6 +107,18 @@ abstract class TestCase extends BaseTestCase
     {
         return [
             "result" => $resultArray,
+            "statusCode",
+            "message",
+        ];
+    }
+
+    public function jsonStructureWithPagination()
+    {
+        return [
+            "result" => [
+                    "data",
+                    "pagination"
+                ],
             "statusCode",
             "message",
         ];
