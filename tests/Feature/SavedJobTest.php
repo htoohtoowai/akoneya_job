@@ -6,43 +6,42 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class SaveJobTest extends TestCase
+class SavedJobTest extends TestCase
 {
+    protected $jobType, $job, $zones;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->jobType = $this->createJobType();
+        $this->job = $this->createJob($this->user->id, $this->jobType->id);
+        $this->savedJob = $this->createSavedJob($this->job->id, $this->user->id);
+        $this->zones = config('zones.zoneSelections');
+    }
+
     public function testSaveJobSuccessfully()
     {
         $response = $this->get("api/jobs/".$this->job->id."/save", $this->headers);
 
         $response->assertCreated();
 
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
 
-        $response->assertJson([
-            "result" => null,
-            "statusCode" => config('http_status.created'),
-            "message" =>  trans('message.saveSuccessMsg')
-        ]);
+        $response->assertJson(
+            $this->successJson(null, config('http_status.created'), trans('message.saveSuccessMsg'))
+        );
     }
 
     public function testSaveJobFailed_WhenJobIdIsInvalid()
     {
         $response = $this->get("api/jobs/".config('mock_data.invalidJobId')."/save", $this->headers);
 
-        $response->assertStatus(400);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson([
-            "statusCode" => config('http_status.badRequest'),
-            "message" =>  trans('message.notFoundMsg')
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJson());
     }
 
     public function testGetSavedJobListSuccessfully()
@@ -51,17 +50,15 @@ class SaveJobTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertJsonStructure([
-            "result" => [
+        $response->assertJsonStructure($this->jsonStructureWithResultArray(
+            [
                 "data",
                 "pagination"
-            ],
-            "statusCode",
-            "message"
-        ]);
+            ]
+        ));
 
-        $response->assertJson([
-            "result" => [
+        $response->assertJson($this->successJson(
+            [
                 "data" =>[
                     [
                         "id" => $this->savedJob->id,
@@ -77,11 +74,7 @@ class SaveJobTest extends TestCase
                 "pagination" => [
                     "nextId" => null
                 ]
-            ],
-            "statusCode"=>config('http_status.success'),
-            "message"=> config('message.successMsg')
-        ]);
-     
+            ], $this->successStatusCode, $this->successMsg));
     }
 
     public function testDeleteSavedJobSuccessfully()
@@ -90,34 +83,21 @@ class SaveJobTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
 
-        $response->assertJson([
-            "result" => null,
-            "statusCode" => config('http_status.success'),
-            "message" =>  trans('message.deleteSuccessMsg')
-        ]);
+        $response->assertJson(
+            $this->successJson(null, $this->successStatusCode, trans('message.deleteSuccessMsg'))
+        );
     }
 
     public function testDeleteSavedJobFailed()
     {
         $response = $this->json('Delete', 'api/savedJobs/'.config('mock_data.invalidJobId'), [], $this->headers);
 
-        $response->assertStatus(400);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson([
-            "statusCode" => config('http_status.badRequest'),
-            "message" =>  trans('message.notFoundMsg')
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJson());
     }
 }

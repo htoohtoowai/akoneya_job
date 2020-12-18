@@ -14,14 +14,10 @@ class LocationTest extends TestCase
         
         $response->assertOk();
 
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message",
-        ]);
-
-        $response->assertJson([
-            "result" => [
+        $response->assertJsonStructure($this->jsonStructureWithResultArray(["locations"]));
+       
+        $response->assertJson($this->successJson(
+            [
                 "locations" => [
                     [
                         "id" => config('zones.zoneSelections.1.id'),
@@ -35,11 +31,8 @@ class LocationTest extends TestCase
                         "id" => config('zones.zoneSelections.3.id'),
                         "name" => config('zones.zoneSelections.3.name')
                     ]
-                    //...more zones list order by name
+                    //...more Locations list order by name
                 ]
-            ],
-            "statusCode" => config('http_status.success'),
-            "message" =>  config('message.successMsg')
-        ]);
+            ], $this->successStatusCode, $this->successMsg));
     }
 }

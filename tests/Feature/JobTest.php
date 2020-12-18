@@ -9,30 +9,35 @@ use Tests\TestCase;
 
 class JobTest extends TestCase
 {
+    protected $personalInfo, $jobType, $job, $zones;
+
+    public function setUp(): void
+    {
+        parent::setUp();    
+
+        $this->personalInfo = $this->createPersonalInformation($this->user->id);
+        $this->jobType = $this->createJobType();
+        $this->job = $this->createJob($this->user->id, $this->jobType->id);
+        $this->zones = config('zones.zoneSelections');
+    }
+
     public function testGetJobTypeListSuccessfully()
     {
         $response = $this->get('api/jobTypes', $this->headers);
         
         $response->assertOk();
 
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message",
-        ]);
+        $response->assertJsonStructure($this->jsonStructureWithResultArray(["jobTypes"]));
 
-        $response->assertJson([
-            "result" => [
-                "jobTypes" =>[
+        $response->assertJson($this->successJson(
+            [ 
+                "jobTypes" => [
                     [
                         "id" => $this->jobType->id,
                         "name"=> $this->jobType->name,
                     ]
                 ]
-            ],
-            "statusCode" => config('http_status.success'),
-            "message" =>  config('message.successMsg')
-        ]);
+            ], $this->successStatusCode, $this->successMsg));
     }
 
     public function testGetJobListSuccessfully()
@@ -41,17 +46,15 @@ class JobTest extends TestCase
         
         $response->assertOk();
 
-        $response->assertJsonStructure([
-            "result" => [
+        $response->assertJsonStructure($this->jsonStructureWithResultArray(
+            [
                 "data",
                 "pagination"
-            ],
-            "statusCode",
-            "message"
-        ]);
+            ]
+        ));
 
-        $response->assertJson([
-            "result" => [
+        $response->assertJson($this->successJson(
+            [
                 "data" =>[
                     [
                         "id" => $this->job->id,
@@ -61,24 +64,20 @@ class JobTest extends TestCase
                         "companyName" => $this->job->company_name,
                         "photo" => getFileUrlFromAkoneyaMedia($this->job->photo),
                         "location" => $this->zones[$this->job->zone_id]['name'],
-                        "isSaved" => true,
+                        "isSaved" => false,
                         "createdAt" => strTo24hrFormat($this->job->created_at)
                     ]
                 ],
                 "pagination" => [
                     "nextId" => null
                 ]
-            ],
-            "statusCode"=>config('http_status.success'),
-            "message"=> config('message.successMsg')
-        ]);
+            ], $this->successStatusCode, $this->successMsg));
+          
     }
 
     public function testCreateJobSuccessfully()
     {
         $image = UploadedFile::fake()->create('fake-photo.png');
-
-        $this->createPersonalInformation($this->user->id);  
 
         $requestBody = [
             'title' => config('mock_data.name'),
@@ -99,21 +98,15 @@ class JobTest extends TestCase
      
         $response->assertCreated();
 
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
-
+        $response->assertJsonStructure($this->jsonStructure());
+    
         $content = $response->decodeResponseJson();
 
         $this->assertIsInt($content["result"]["id"]);
 
-        $response->assertJson([
-            "result" => $this->prepareJobResponseResource($content),
-            "statusCode"=>config('http_status.created'),
-            "message" => trans('message.createSuccessMsg')
-        ]);
+        $response->assertJson(
+            $this->successJson($this->prepareJobResponseResource($content), config('http_status.created'), trans('message.createSuccessMsg'))
+        );
     }
 
     public function testCreateJobFailed()
@@ -137,24 +130,15 @@ class JobTest extends TestCase
 
         $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
         
-        $response->assertStatus(400);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson([
-            "result" => null,
-            "statusCode" => config('http_status.badRequest'),
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJsonForValidation());
     }
 
     public function testUpdateJobSuccessfully()
     {
-        $this->createPersonalInformation($this->user->id);
-
         $requestBody = [
             'title' => config('mock_data.name'),
             'companyName' => config('mock_data.companyName'),
@@ -175,19 +159,13 @@ class JobTest extends TestCase
 
         $response->assertOk();
         
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
 
         $content = $response->decodeResponseJson();
 
-        $response->assertJson([
-            "result" => $this->prepareJobResponseResource($content),
-            "statusCode" => config('http_status.success'),
-            "message" => trans('message.updateSuccessMsg')
-        ]);
+        $response->assertJson(
+            $this->successJson($this->prepareJobResponseResource($content), $this->successStatusCode, trans('message.updateSuccessMsg'))
+        );
     }
 
     public function testUpdateJobFailed_WhenJobIdIsInvalid()
@@ -210,57 +188,35 @@ class JobTest extends TestCase
 
         $response = $this->json('POST', 'api/jobs/'.config('mock_data.invalidJobId'), $requestBody, $this->headers);
 
-        $response->assertStatus(400);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson([
-            "statusCode" => config('http_status.badRequest'),
-            "message" =>  trans('message.notFoundMsg')
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJson());
     }
  
     public function testDeleteJobSuccessfully()
     {
-        $this->createPersonalInformation($this->user->id);
-
         $response = $this->json('Delete', 'api/jobs/'.$this->job->id, [], $this->headers);
         
         $response->assertOk();
         
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
 
-        $response->assertJson([
-            "result" => null,
-            "statusCode" => config('http_status.success'),
-            "message" => trans('message.deleteSuccessMsg')
-        ]);
+        $response->assertJson(
+            $this->successJson(null, $this->successStatusCode, trans('message.deleteSuccessMsg'))
+        );
     }
 
     public function testDeleteJobFailed_WhenJobIdIsInvalid()
     {
         $response = $this->json('Delete', 'api/jobs/'.config('mock_data.invalidJobId'), [], $this->headers);
         
-        $response->assertStatus(400);
-        
-        $response->assertJsonStructure([
-            "result",
-            "statusCode",
-            "message"
-        ]);
+        $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson([
-            "statusCode" => config('http_status.badRequest'),
-            "message" =>  trans('message.notFoundMsg')
-        ]);
+        $response->assertJsonStructure($this->jsonStructure());
+      
+        $response->assertJson($this->failedJson());
     }
 
     public function prepareJobResponseResource($content)

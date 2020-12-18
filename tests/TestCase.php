@@ -22,14 +22,15 @@ abstract class TestCase extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
+
         $this->user = $this->createUser();
-        $this->personalInfo = $this->createPersonalInformation($this->user);
         $this->token = JWTAuth::fromUser($this->user);
         $this->headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
-        $this->jobType = $this->createJobType();
-        $this->job = $this->createJob($this->user->id, $this->jobType->id);
-        $this->savedJob = $this->createSavedJob($this->job->id, $this->user->id);
-        $this->zones = config('zones.zoneSelections');
+
+        $this->successStatusCode = config('http_status.success');
+        $this->badRequestStatusCode = config('http_status.badRequest');
+        $this->successMsg = trans('message.successMsg');
+        $this->notFoundMsg = trans('message.notFoundMsg');
     }
 
     public function createUser()
@@ -89,5 +90,49 @@ abstract class TestCase extends BaseTestCase
             'job_id' => $jobId,
             'client_user_id' => $userId
         ]);
+    }
+
+    public function jsonStructure()
+    {
+        return [
+            "result",
+            "statusCode",
+            "message",
+        ];
+    }
+
+    public function jsonStructureWithResultArray($resultArray)
+    {
+        return [
+            "result" => $resultArray,
+            "statusCode",
+            "message",
+        ];
+    }
+
+    public function successJson($result, $statusCode, $message)
+    {
+        return [
+            "result" => $result,
+            "statusCode" => $statusCode,
+            "message" =>  $message
+        ];
+    }
+
+    public function failedJson()
+    {
+        return [
+            "result" => null,
+            "statusCode" => $this->badRequestStatusCode,
+            "message" =>  $this->notFoundMsg
+        ];
+    }
+
+    public function failedJsonForValidation()
+    {
+        return [
+            "result" => null,
+            "statusCode" => $this->badRequestStatusCode,
+        ];
     }
 }
