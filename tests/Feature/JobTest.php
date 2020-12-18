@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class JobTest extends TestCase
 {
-    protected $personalInfo, $jobType, $job, $zones;
+    private $personalInfo, $jobType, $job, $zones;
 
     public function setUp(): void
     {
@@ -105,7 +105,7 @@ class JobTest extends TestCase
         $this->assertIsInt($content["result"]["id"]);
 
         $response->assertJson(
-            $this->successJson($this->prepareJobResponseResource($content), config('http_status.created'), trans('message.createSuccessMsg'))
+            $this->successJson($this->prepareJobResponseResource($content), $this->createStatusCode, trans('message.createSuccessMsg'))
         );
     }
 

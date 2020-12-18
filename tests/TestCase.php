@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication, DatabaseMigrations;
 
-    protected $user, $personalInfo, $token, $headers, $jobType, $job, $savedJob, $zones;
+    protected $user, $token, $headers;
 
     public function setUp(): void
     {
@@ -29,6 +29,8 @@ abstract class TestCase extends BaseTestCase
 
         $this->successStatusCode = config('http_status.success');
         $this->badRequestStatusCode = config('http_status.badRequest');
+        $this->createStatusCode = config('http_status.created');
+        
         $this->successMsg = trans('message.successMsg');
         $this->notFoundMsg = trans('message.notFoundMsg');
     }

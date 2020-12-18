@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class SavedJobTest extends TestCase
 {
-    protected $jobType, $job, $zones;
+    private $jobType, $job, $savedJob, $zones;
 
     public function setUp(): void
     {
@@ -29,7 +29,7 @@ class SavedJobTest extends TestCase
         $response->assertJsonStructure($this->jsonStructure());
 
         $response->assertJson(
-            $this->successJson(null, config('http_status.created'), trans('message.saveSuccessMsg'))
+            $this->successJson(null, $this->createStatusCode, trans('message.saveSuccessMsg'))
         );
     }
 
