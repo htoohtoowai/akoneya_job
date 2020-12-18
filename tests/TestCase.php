@@ -94,36 +94,6 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    public function jsonStructure()
-    {
-        return [
-            "result",
-            "statusCode",
-            "message",
-        ];
-    }
-
-    public function jsonStructureWithResultArray($resultArray)
-    {
-        return [
-            "result" => $resultArray,
-            "statusCode",
-            "message",
-        ];
-    }
-
-    public function jsonStructureWithPagination()
-    {
-        return [
-            "result" => [
-                    "data",
-                    "pagination"
-                ],
-            "statusCode",
-            "message",
-        ];
-    }
-
     public function successJson($result, $statusCode, $message)
     {
         return [

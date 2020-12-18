@@ -14,8 +14,6 @@ class LocationTest extends TestCase
         
         $response->assertOk();
 
-        $response->assertJsonStructure($this->jsonStructureWithResultArray(["locations"]));
-       
         $response->assertJson($this->successJson(
             [
                 "locations" => [

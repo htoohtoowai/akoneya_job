@@ -26,8 +26,6 @@ class SavedJobTest extends TestCase
 
         $response->assertCreated();
 
-        $response->assertJsonStructure($this->jsonStructure());
-
         $response->assertJson(
             $this->successJson(null, $this->createStatusCode, trans('message.saveSuccessMsg'))
         );
@@ -39,8 +37,6 @@ class SavedJobTest extends TestCase
 
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJsonStructure($this->jsonStructure());
-      
         $response->assertJson($this->failedJson());
     }
 
@@ -50,8 +46,6 @@ class SavedJobTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertJsonStructure($this->jsonStructureWithPagination());
-        
         $response->assertJson($this->successJson(
             [
                 "data" =>[
@@ -78,8 +72,6 @@ class SavedJobTest extends TestCase
 
         $response->assertOk();
 
-        $response->assertJsonStructure($this->jsonStructure());
-
         $response->assertJson(
             $this->successJson(null, $this->successStatusCode, trans('message.deleteSuccessMsg'))
         );
@@ -91,8 +83,6 @@ class SavedJobTest extends TestCase
 
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJsonStructure($this->jsonStructure());
-      
         $response->assertJson($this->failedJson());
     }
 }

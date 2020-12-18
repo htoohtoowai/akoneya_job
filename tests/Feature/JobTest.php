@@ -27,8 +27,6 @@ class JobTest extends TestCase
         
         $response->assertOk();
 
-        $response->assertJsonStructure($this->jsonStructureWithResultArray(["jobTypes"]));
-
         $response->assertJson($this->successJson(
             [ 
                 "jobTypes" => [
@@ -45,8 +43,6 @@ class JobTest extends TestCase
         $response = $this->json('GET', 'api/jobs?nextId=0', [], $this->headers);
         
         $response->assertOk();
-
-        $response->assertJsonStructure($this->jsonStructureWithPagination());
 
         $response->assertJson($this->successJson(
             [
@@ -93,8 +89,6 @@ class JobTest extends TestCase
      
         $response->assertCreated();
 
-        $response->assertJsonStructure($this->jsonStructure());
-    
         $content = $response->decodeResponseJson();
 
         $this->assertIsInt($content["result"]["id"]);
@@ -127,8 +121,6 @@ class JobTest extends TestCase
         
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJsonStructure($this->jsonStructure());
-      
         $response->assertJson($this->failedJsonForValidation());
     }
 
@@ -154,8 +146,6 @@ class JobTest extends TestCase
 
         $response->assertOk();
         
-        $response->assertJsonStructure($this->jsonStructure());
-
         $content = $response->decodeResponseJson();
 
         $response->assertJson(
@@ -185,8 +175,6 @@ class JobTest extends TestCase
 
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJsonStructure($this->jsonStructure());
-      
         $response->assertJson($this->failedJson());
     }
  
@@ -196,8 +184,6 @@ class JobTest extends TestCase
         
         $response->assertOk();
         
-        $response->assertJsonStructure($this->jsonStructure());
-
         $response->assertJson(
             $this->successJson(null, $this->successStatusCode, trans('message.deleteSuccessMsg'))
         );
@@ -209,8 +195,6 @@ class JobTest extends TestCase
         
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJsonStructure($this->jsonStructure());
-      
         $response->assertJson($this->failedJson());
     }
 
