@@ -28,7 +28,7 @@ class AuthenticateToUaaService
                 if($authenticateResponseJson["statusCode"] == 200) {
                     $request->merge([
                         "client_user_access_token" => $accessToken,
-                        "authUserId" => $authenticateResponseJson["result"]["user"]["id"]
+                        "auth_user_id" => $authenticateResponseJson["result"]["user"]["id"]
                     ]);
                     return $next($request);
                 }

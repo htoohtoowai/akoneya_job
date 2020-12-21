@@ -49,11 +49,11 @@ if (!function_exists('getFileUrlFromAkoneyaMedia')) {
 /**
 * Check Request Auth User Id
 */
-if(!function_exists('check_authUserId')) {
+if(!function_exists('check_auth_user_id')) {
 
-    function check_authUserId($authUserId,$passedId) {
+    function check_auth_user_id($auth_user_id,$passedId) {
 
-        return $authUserId == $passedId;
+        return $auth_user_id == $passedId;
     }
 }
 

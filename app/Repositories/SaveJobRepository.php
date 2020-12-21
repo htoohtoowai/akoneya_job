@@ -43,7 +43,7 @@ class SaveJobRepository
                                     if (request()->nextId != 0) {
                                         $q->where('saved_jobs.id', '<=', request()->nextId);
                                     }
-                                    $q->where('saved_jobs.client_user_id', request()->authUserId);
+                                    $q->where('saved_jobs.client_user_id', request()->auth_user_id);
                                 })
                                 ->select('saved_jobs.id as saveJobId', 'jobs.Id as jobId', 'jobs.photo', 'jobs.title', 'jobs.created_at', 'zone_id', 'jobs.salary', 'jobs.company_name')
                                 ->orderBy('saveJobId', 'DESC')
