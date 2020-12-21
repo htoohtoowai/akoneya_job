@@ -24,23 +24,23 @@ class JobController extends Controller
     }
     public function getJobs(Request $request)
     {
-        return $this->jobRepo->getJobs($request,10, $request->auth_user_id);
+        return $this->jobRepo->getJobs($request,10, $request->authUserId);
     }
     public function createJob(JobRequest $request)
-    {
-        return $this->jobRepo->createJob($request, $request->auth_user_id);
+    { 
+        return $this->jobRepo->createJob($request, $request->authUserId);
     }
     public function updateJob(UpdateJobRequest $request,$id)
     {
-        return $this->jobRepo->updateJob($request,$id, $request->auth_user_id);
+        return $this->jobRepo->updateJob($request,$id, $request->authUserId);
     }
     public function deleteJob(Request $request, $id)
     {
-        return $this->jobRepo->deleteJob($id, $request->auth_user_id);
+        return $this->jobRepo->deleteJob($id, $request->authUserId);
     }
     public function details(Request $request, $id)
     {
-        return $this->jobRepo->getDetails($id, $request->auth_user_id);
+        return $this->jobRepo->getDetails($id, $request->authUserId);
     }
     
 }

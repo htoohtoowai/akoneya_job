@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\UploadedFile;
 use JWTAuth;
 use App\User;
@@ -23,6 +24,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        $this->setUaaAuthHttpFake();
         $this->user = $this->createUser();
         $this->token = JWTAuth::fromUser($this->user);
         $this->headers = ['Accept' => 'application/json','Authorization' => "Bearer $this->token"];
@@ -35,6 +37,23 @@ abstract class TestCase extends BaseTestCase
         $this->notFoundMsg = trans('message.notFoundMsg');
     }
 
+    public function setUaaAuthHttpFake()
+    {
+    	Http::fake([
+            // Stub a JSON response for UAA Service Authenticate endpoint
+            config('services.uaa_auth_service.url') => Http::response([
+                'result' => [
+                    'user' => [
+                        'id' => 1
+                    ]
+                ],
+                'statusCode' => 200,
+                'message' => 'Success.'
+            ]
+            , 200, ['Headers'])
+        ]);  
+    }
+    
     public function createUser()
     {
         return User::create([

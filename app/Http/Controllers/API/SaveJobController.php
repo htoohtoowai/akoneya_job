@@ -14,7 +14,7 @@ class SaveJobController extends Controller
     }
     public function saveJob(Request $request, $jobId)
     {
-        return $this->SaveJobRepository->saveJob($jobId, $request->auth_user_id);
+        return $this->SaveJobRepository->saveJob($jobId, $request->authUserId);
     }
     public function saveJobList(Request $request)
     {
@@ -22,6 +22,6 @@ class SaveJobController extends Controller
     }
     public function saveJobDelete(Request $request, $jobId)
     {
-        return $this->SaveJobRepository->saveJobDelete($jobId, $request->auth_user_id);
+        return $this->SaveJobRepository->saveJobDelete($jobId, $request->authUserId);
     }
 }

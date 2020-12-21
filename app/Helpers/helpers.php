@@ -49,9 +49,9 @@ if (!function_exists('getFileUrlFromAkoneyaMedia')) {
 /**
 * Check Request Auth User Id
 */
-if(!function_exists('check_auth_user_id')) {
+if(!function_exists('check_authUserId')) {
 
-    function check_auth_user_id($authUserId,$passedId) {
+    function check_authUserId($authUserId,$passedId) {
 
         return $authUserId == $passedId;
     }
