@@ -50,5 +50,6 @@ return [
     'locationNotFound' => 'This location does not exist.',
     'genderNotFound' => 'This gender does not exist.',
     'jobTypeNotFound' => 'This job type does not exist.',
+    'jobReportFail' => 'You can not report your product.',
 
 ];

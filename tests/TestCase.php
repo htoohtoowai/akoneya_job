@@ -12,6 +12,8 @@ use App\Models\Job;
 use App\Models\JobType;
 use App\Models\SavedJob;
 use App\PersonalInformation;
+use App\Models\JobReport;
+use App\Models\JobReportReason;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -91,6 +93,13 @@ abstract class TestCase extends BaseTestCase
         return SavedJob::create([
             'job_id' => $jobId,
             'client_user_id' => $userId
+        ]);
+    }
+
+    public function createReason()
+    {
+        return JobReportReason::create([
+            'name' => config('mock_data.name'),
         ]);
     }
 
