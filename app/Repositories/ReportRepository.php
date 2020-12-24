@@ -23,10 +23,6 @@ class ReportRepository extends BaseRepository
     public function getReportReason($request)
     {
         $reportReasonList = $this->model->select('id', 'name')->where('deleted_status', $this->disableDeletedStatus)->get();
-     
-        if ($reportReasonList->isEmpty()) {
-            return $this->responseRepo->failResponse(null, $this->responseRepo->badRequestStatusCode, trans('message.notFoundMsg'));
-        }
 
         return $this->responseRepo->successResponse(["reportReasons" => $reportReasonList], $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
@@ -38,10 +34,12 @@ class ReportRepository extends BaseRepository
         if (!$job) {
             throw new NotFoundException(trans('message.itemNotFoundMsg'));
         }
+
         if($request->auth_user_id == $job->client_user_id ){
             return $this->responseRepo->failResponse(null, $this->responseRepo->badRequestStatusCode, trans('message.jobReportFail'));
-        }          
-        $this->checkReportReason($request->reasonId);
+        } 
+                 
+        $this->findReportReason($request->reasonId);
 
         $this->reportModel->create([
             'client_user_id' => $request->auth_user_id,
@@ -53,7 +51,7 @@ class ReportRepository extends BaseRepository
         return $this->responseRepo->successResponse(null, $this->responseRepo->createStatusCode, trans('message.reportSuccessMsg'));
     }
 
-    public function checkReportReason($reasonId)
+    public function findReportReason($reasonId)
     {
         $reportReason = $this->model->where('id', $reasonId)->first();
         

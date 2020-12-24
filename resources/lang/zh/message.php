@@ -46,6 +46,6 @@ return [
     'genderNotFound' => '该性别不存在。',
     'jobTypeNotFound' => '该作业类型不存在。',
     'jobReportFail' => '您无法举报您的产品。',
-
+    'itemNotFoundMsg' => '此项不存在。',
 
 ];

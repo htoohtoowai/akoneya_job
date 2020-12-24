@@ -60,15 +60,44 @@ class ReportTest extends TestCase
     }
 
     public function testReportToJobFailWhenUserIdIsEqual()
-    {
-            $requestBody = [
-                'reasonId' => $this->reason->id
-            ];
-    
-            $response = $this->json('POST', "api/jobs/".$this->job->id."/report", $requestBody, $this->headers);
-    
-            $response->assertStatus($this->badRequestStatusCode);
+    {       
+        $requestBody = [
+            'reasonId' => $this->reason->id
+        ];
 
-            $response->assertJson($this->failedJsonForValidation());
+        $response = $this->json('POST', "api/jobs/".$this->job->id."/report", $requestBody, $this->headers);
+
+        $response->assertStatus($this->badRequestStatusCode);
+
+        $response->assertJson($this->failedJsonForValidation());
+    }
+
+    public function testReportToJobFailWhenReasonIdIsNull()
+    {
+        $this->job = $this->createJob(2, $this->jobType->id);
+        $requestBody = [
+            'reasonId' => null
+        ];
+
+        $response = $this->json('POST', "api/jobs/".$this->job->id."/report", $requestBody, $this->headers);
+
+        $response->assertStatus($this->badRequestStatusCode);
+
+        $response->assertJson($this->reasonNotExitJsonStructure());
+
+    }
+
+    public function testReportToJobFailWhenJobIdIsInvalid()
+    {
+        $this->job = $this->createJob(2, $this->jobType->id);
+        $requestBody = [
+            'reasonId' => null
+        ];
+
+        $response = $this->json('POST', "api/jobs/45986255596/report", $requestBody, $this->headers);
+
+        $response->assertStatus($this->badRequestStatusCode);
+
+        $response->assertJson($this->jobNotExitJsonStructure());
     }
 }

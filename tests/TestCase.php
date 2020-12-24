@@ -128,4 +128,22 @@ abstract class TestCase extends BaseTestCase
             "statusCode" => $this->badRequestStatusCode,
         ];
     }
+
+    public function reasonNotExitJsonStructure()
+    {
+        return [
+            "result" => null,
+            "statusCode" => $this->badRequestStatusCode,
+            "message" => trans('message.reportReasonNotFound')
+        ];
+    }
+
+    public function jobNotExitJsonStructure()
+    {
+        return [
+            "result" => null,
+            "statusCode" => $this->badRequestStatusCode,
+            "message" => trans('message.itemNotFoundMsg')
+        ];
+    }
 }
