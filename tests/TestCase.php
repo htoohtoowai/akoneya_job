@@ -12,6 +12,8 @@ use App\Models\Job;
 use App\Models\JobType;
 use App\Models\SavedJob;
 use App\PersonalInformation;
+use App\Models\JobReport;
+use App\Models\JobReportReason;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -94,6 +96,13 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
+    public function createReason()
+    {
+        return JobReportReason::create([
+            'name' => config('mock_data.name'),
+        ]);
+    }
+
     public function successJson($result, $statusCode, $message)
     {
         return [
@@ -117,6 +126,24 @@ abstract class TestCase extends BaseTestCase
         return [
             "result" => null,
             "statusCode" => $this->badRequestStatusCode,
+        ];
+    }
+
+    public function reasonNotExistJsonStructure()
+    {
+        return [
+            "result" => null,
+            "statusCode" => $this->badRequestStatusCode,
+            "message" => trans('message.reportReasonNotFound')
+        ];
+    }
+
+    public function jobNotExistJsonStructure()
+    {
+        return [
+            "result" => null,
+            "statusCode" => $this->badRequestStatusCode,
+            "message" => trans('message.itemNotFoundMsg')
         ];
     }
 }

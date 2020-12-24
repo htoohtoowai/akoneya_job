@@ -27,6 +27,9 @@ Route::group(['middleware' => 'localization'], function () {
             Route::get('locations', 'JobController@getLocations');
             
             Route::get('jobTypes', 'JobTypeController@index');
+
+            Route::get('reportReasons', 'ReportController@getReportReason');
+            Route::post('jobs/{id}/report','ReportController@createJobReport');
         });
     });
 });
