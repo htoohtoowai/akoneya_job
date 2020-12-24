@@ -38,7 +38,7 @@ class ReportRepository extends BaseRepository
         if($request->auth_user_id == $job->client_user_id ){
             return $this->responseRepo->failResponse(null, $this->responseRepo->badRequestStatusCode, trans('message.jobReportFail'));
         } 
-                 
+
         $this->findReportReason($request->reasonId);
 
         $this->reportModel->create([
@@ -53,7 +53,7 @@ class ReportRepository extends BaseRepository
 
     public function findReportReason($reasonId)
     {
-        $reportReason = $this->model->where('id', $reasonId)->first();
+        $reportReason = $this->model->where('id', $reasonId)->where('deleted_status', $this->disableDeletedStatus)->first();
         
         if (!$reportReason) {
             throw new NotFoundException(trans('message.reportReasonNotFound'));

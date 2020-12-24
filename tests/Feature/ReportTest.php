@@ -83,7 +83,7 @@ class ReportTest extends TestCase
 
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson($this->reasonNotExitJsonStructure());
+        $response->assertJson($this->reasonNotExistJsonStructure());
 
     }
 
@@ -98,6 +98,6 @@ class ReportTest extends TestCase
 
         $response->assertStatus($this->badRequestStatusCode);
 
-        $response->assertJson($this->jobNotExitJsonStructure());
+        $response->assertJson($this->jobNotExistJsonStructure());
     }
 }

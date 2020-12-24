@@ -129,7 +129,7 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function reasonNotExitJsonStructure()
+    public function reasonNotExistJsonStructure()
     {
         return [
             "result" => null,
@@ -138,7 +138,7 @@ abstract class TestCase extends BaseTestCase
         ];
     }
 
-    public function jobNotExitJsonStructure()
+    public function jobNotExistJsonStructure()
     {
         return [
             "result" => null,
