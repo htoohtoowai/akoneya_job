@@ -51,9 +51,9 @@ if (!function_exists('getFileUrlFromAkoneyaMedia')) {
 */
 if(!function_exists('check_auth_user_id')) {
 
-    function check_auth_user_id($authUserId,$passedId) {
+    function check_auth_user_id($auth_user_id,$passedId) {
 
-        return $authUserId == $passedId;
+        return $auth_user_id == $passedId;
     }
 }
 

@@ -27,7 +27,7 @@ class JobController extends Controller
         return $this->jobRepo->getJobs($request,10, $request->auth_user_id);
     }
     public function createJob(JobRequest $request)
-    {
+    { 
         return $this->jobRepo->createJob($request, $request->auth_user_id);
     }
     public function updateJob(UpdateJobRequest $request,$id)
