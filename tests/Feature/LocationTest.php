@@ -10,7 +10,7 @@ class LocationTest extends TestCase
 {
     public function testGetLocationListSuccessfully()
     {
-        $response = $this->get('api/locations', $this->headers);
+        $response = $this->get('api/v1.0/locations', $this->headers);
         
         $response->assertOk();
 

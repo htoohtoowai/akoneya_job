@@ -8,7 +8,10 @@ use Tests\TestCase;
 
 class SavedJobTest extends TestCase
 {
-    private $jobType, $job, $savedJob, $zones;
+    private $jobType;
+    private $job;
+    private $savedJob;
+    private $zones;
 
     public function setUp(): void
     {
@@ -22,7 +25,7 @@ class SavedJobTest extends TestCase
 
     public function testSaveJobSuccessfully()
     {
-        $response = $this->get("api/jobs/".$this->job->id."/save", $this->headers);
+        $response = $this->get("api/v1.0/jobs/".$this->job->id."/save", $this->headers);
 
         $response->assertCreated();
 
@@ -33,7 +36,7 @@ class SavedJobTest extends TestCase
 
     public function testSaveJobFailed_WhenJobIdIsInvalid()
     {
-        $response = $this->get("api/jobs/".config('mock_data.invalidJobId')."/save", $this->headers);
+        $response = $this->get("api/v1.0/jobs/".config('mock_data.invalidJobId')."/save", $this->headers);
 
         $response->assertStatus($this->badRequestStatusCode);
 
@@ -42,7 +45,7 @@ class SavedJobTest extends TestCase
 
     public function testGetSavedJobListSuccessfully()
     {
-        $response = $this->get("api/saveJobs?nextId=0", $this->headers);
+        $response = $this->get("api/v1.0/saveJobs?nextId=0", $this->headers);
 
         $response->assertOk();
 
@@ -63,12 +66,15 @@ class SavedJobTest extends TestCase
                 "pagination" => [
                     "nextId" => null
                 ]
-            ], $this->successStatusCode, $this->successMsg));
+            ],
+            $this->successStatusCode,
+            $this->successMsg
+        ));
     }
 
     public function testDeleteSavedJobSuccessfully()
     {
-        $response = $this->json('Delete', 'api/savedJobs/'.$this->savedJob->job_id, [], $this->headers);
+        $response = $this->json('Delete', 'api/v1.0/savedJobs/'.$this->savedJob->job_id, [], $this->headers);
 
         $response->assertOk();
 
@@ -79,7 +85,7 @@ class SavedJobTest extends TestCase
 
     public function testDeleteSavedJobFailed()
     {
-        $response = $this->json('Delete', 'api/savedJobs/'.config('mock_data.invalidJobId'), [], $this->headers);
+        $response = $this->json('Delete', 'api/v1.0/savedJobs/'.config('mock_data.invalidJobId'), [], $this->headers);
 
         $response->assertStatus($this->badRequestStatusCode);
 
