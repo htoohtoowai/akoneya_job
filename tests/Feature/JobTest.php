@@ -9,11 +9,14 @@ use Tests\TestCase;
 
 class JobTest extends TestCase
 {
-    private $personalInfo, $jobType, $job, $zones;
+    private $personalInfo;
+    private $jobType;
+    private $job;
+    private $zones;
 
     public function setUp(): void
     {
-        parent::setUp();    
+        parent::setUp();
 
         $this->personalInfo = $this->createPersonalInformation($this->user->id);
         $this->jobType = $this->createJobType();
@@ -23,24 +26,27 @@ class JobTest extends TestCase
 
     public function testGetJobTypeListSuccessfully()
     {
-        $response = $this->get('api/jobTypes', $this->headers);
+        $response = $this->get('api/v1.0/jobTypes', $this->headers);
         
         $response->assertOk();
 
         $response->assertJson($this->successJson(
-            [ 
+            [
                 "jobTypes" => [
                     [
                         "id" => $this->jobType->id,
                         "name"=> $this->jobType->name,
                     ]
                 ]
-            ], $this->successStatusCode, $this->successMsg));
+            ],
+            $this->successStatusCode,
+            $this->successMsg
+        ));
     }
 
     public function testGetJobListSuccessfully()
     {
-        $response = $this->json('GET', 'api/jobs?nextId=0', [], $this->headers);
+        $response = $this->json('GET', 'api/v1.0/jobs?nextId=0', [], $this->headers);
         
         $response->assertOk();
 
@@ -62,8 +68,10 @@ class JobTest extends TestCase
                 "pagination" => [
                     "nextId" => null
                 ]
-            ], $this->successStatusCode, $this->successMsg));
-          
+            ],
+            $this->successStatusCode,
+            $this->successMsg
+        ));
     }
 
     public function testCreateJobSuccessfully()
@@ -85,7 +93,7 @@ class JobTest extends TestCase
             'description' => config('mock_data.jobDescription'),
             'requirement' => config('mock_data.requirement')
         ];
-        $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
+        $response = $this->json('POST', 'api/v1.0/jobs', $requestBody, $this->headers);
      
         $response->assertCreated();
 
@@ -100,7 +108,7 @@ class JobTest extends TestCase
 
     public function testCreateJobFailed()
     {
-        $this->createPersonalInformation($this->user->id);  
+        $this->createPersonalInformation($this->user->id);
 
         $requestBody = [
             'title' => null,
@@ -117,7 +125,7 @@ class JobTest extends TestCase
             'requirement' => null
         ];
 
-        $response = $this->json('POST', 'api/jobs', $requestBody, $this->headers);
+        $response = $this->json('POST', 'api/v1.0/jobs', $requestBody, $this->headers);
         
         $response->assertStatus($this->badRequestStatusCode);
 
@@ -142,7 +150,7 @@ class JobTest extends TestCase
             'photoDeleteStatus' => true
         ];
 
-        $response = $this->json('POST', 'api/jobs/'.$this->job->id, $requestBody, $this->headers);
+        $response = $this->json('POST', 'api/v1.0/jobs/'.$this->job->id, $requestBody, $this->headers);
 
         $response->assertOk();
         
@@ -171,7 +179,7 @@ class JobTest extends TestCase
             'photoDeleteStatus' => true
         ];
 
-        $response = $this->json('POST', 'api/jobs/'.config('mock_data.invalidJobId'), $requestBody, $this->headers);
+        $response = $this->json('POST', 'api/v1.0/jobs/'.config('mock_data.invalidJobId'), $requestBody, $this->headers);
 
         $response->assertStatus($this->badRequestStatusCode);
 
@@ -180,7 +188,7 @@ class JobTest extends TestCase
  
     public function testDeleteJobSuccessfully()
     {
-        $response = $this->json('Delete', 'api/jobs/'.$this->job->id, [], $this->headers);
+        $response = $this->json('Delete', 'api/v1.0/jobs/'.$this->job->id, [], $this->headers);
         
         $response->assertOk();
         
@@ -191,7 +199,7 @@ class JobTest extends TestCase
 
     public function testDeleteJobFailed_WhenJobIdIsInvalid()
     {
-        $response = $this->json('Delete', 'api/jobs/'.config('mock_data.invalidJobId'), [], $this->headers);
+        $response = $this->json('Delete', 'api/v1.0/jobs/'.config('mock_data.invalidJobId'), [], $this->headers);
         
         $response->assertStatus($this->badRequestStatusCode);
 

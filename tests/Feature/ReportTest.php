@@ -26,7 +26,7 @@ class ReportTest extends TestCase
 
     public function testGetReportReasonListSucessfully()
     {
-        $response = $this->get('api/reportReasons', $this->headers);
+        $response = $this->get('api/v1.0/reportReasons', $this->headers);
         
         $response->assertOk();
 
@@ -48,7 +48,7 @@ class ReportTest extends TestCase
                 'reasonId' => $this->reason->id
             ];
     
-            $response = $this->json('POST', "api/jobs/".$this->job->id."/report", $requestBody, $this->headers);
+            $response = $this->json('POST', "api/v1.0/jobs/".$this->job->id."/report", $requestBody, $this->headers);
     
             $response->assertCreated();
     
@@ -65,7 +65,7 @@ class ReportTest extends TestCase
             'reasonId' => $this->reason->id
         ];
 
-        $response = $this->json('POST', "api/jobs/".$this->job->id."/report", $requestBody, $this->headers);
+        $response = $this->json('POST', "api/v1.0/jobs/".$this->job->id."/report", $requestBody, $this->headers);
 
         $response->assertStatus($this->badRequestStatusCode);
 
@@ -79,7 +79,7 @@ class ReportTest extends TestCase
             'reasonId' => null
         ];
 
-        $response = $this->json('POST', "api/jobs/".$this->job->id."/report", $requestBody, $this->headers);
+        $response = $this->json('POST', "api/v1.0/jobs/".$this->job->id."/report", $requestBody, $this->headers);
 
         $response->assertStatus($this->badRequestStatusCode);
 
@@ -94,7 +94,7 @@ class ReportTest extends TestCase
             'reasonId' => null
         ];
 
-        $response = $this->json('POST', "api/jobs/45986255596/report", $requestBody, $this->headers);
+        $response = $this->json('POST', "api/v1.0/jobs/45986255596/report", $requestBody, $this->headers);
 
         $response->assertStatus($this->badRequestStatusCode);
 
