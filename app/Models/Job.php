@@ -9,4 +9,9 @@ class Job extends Model
     protected $table = "jobs";
   
     protected $guarded = [];
+    
+    public function scopeFilter($query, $filters)
+    {
+        $filters->apply($query);
+    }
 }
