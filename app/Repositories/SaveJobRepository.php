@@ -8,7 +8,7 @@ use App\Exceptions\NotFoundException;
 use App\Http\Resources\SaveJob as SaveJobResource;
 use App\Http\Resources\SaveJobCollection;
 
-class SaveJobRepository
+class SaveJobRepository extends BaseRepository
 {
     public function __construct(ResponseRepository $responseRepo)
     {
@@ -35,31 +35,23 @@ class SaveJobRepository
     }
     public function saveJobList($request)
     {
-        if ($request->nextId == "" || $request->nextId == 'null') {
-            $saveJobList=[];
-        } else {
-            $saveJobList = SavedJob::join('jobs', 'jobs.id', '=', 'saved_jobs.job_id')
-                                ->where(function ($q) {
-                                    if (request()->nextId != 0) {
-                                        $q->where('saved_jobs.id', '<=', request()->nextId);
-                                    }
-                                    $q->where('saved_jobs.client_user_id', request()->auth_user_id);
-                                })
-                                ->select('saved_jobs.id as saveJobId', 'jobs.Id as jobId', 'jobs.photo', 'jobs.title', 'jobs.created_at', 'zone_id', 'jobs.salary', 'jobs.company_name')
-                                ->orderBy('saveJobId', 'DESC')
-                                ->limit($this->perPage+1)
-                                ->get();
+        $saveJobList=[];
+        $saveJobListData = new SaveJobCollection($saveJobList, $this->nextId);
 
-            $totalCount = $saveJobList->count();
-        
-            if ($totalCount > $this->perPage) {
-                $this->nextId = $saveJobList[$this->perPage]->saveJobId;
-           
-                unset($saveJobList[$totalCount - 1]);
+        if ($request->nextId != "" && $request->nextId != 'null') {
+            $saveJobListQuery = SavedJob::where('client_user_id', $request->auth_user_id);
+            
+            $saveJobs = $this->getPaginatedByNextId('id', $request->nextId, $saveJobListQuery);
+            
+            foreach ($saveJobs['result'] as $saveJob) {
+                $saveJob['jobInfo'] = Job::where('id', $saveJob->job_id)->select('id', 'photo', 'title', 'created_at', 'zone_id', 'salary', 'company_name')->first();
             }
+
+            $saveJobListData = new SaveJobCollection($saveJobs['result'], $this->nextId);
+
         }
         
-        return $this->responseRepo->successResponse(new SaveJobCollection($saveJobList, $this->nextId), $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        return $this->responseRepo->successResponse($saveJobListData, $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
     public function saveJobDelete($jobId, $userId)
     {

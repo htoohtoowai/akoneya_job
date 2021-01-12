@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class JobResourceCollection extends ResourceCollection
 {
-   use BaseResourceCollection;
+    use BaseResourceCollection;
     public function toArray($request)
     {
         return [

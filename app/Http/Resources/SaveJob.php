@@ -15,14 +15,14 @@ class SaveJob extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->saveJobId,
-            'jobId' => $this->jobId,
-            'photo' => $this->photo ? getFileUrlFromAkoneyaMedia($this->photo) : "",
-            'title' => $this->title,
-            'createdAt' => strTo24hrFormat($this->created_at),
-            'location' => config('zones.zoneSelections.'.$this->zone_id.'.name') ,
-            'salary' =>$this->salary,
-            'companyName' => $this->company_name
+            'id' => $this->id,
+            'jobId' => $this->job_id,
+            'photo' => $this->jobInfo->photo ? getFileUrlFromAkoneyaMedia($this->jobInfo->photo) : "",
+            'title' => $this->jobInfo->title,
+            'createdAt' => strTo24hrFormat($this->jobInfo->created_at),
+            'location' => config('zones.zoneSelections.'.$this->jobInfo->zone_id.'.name') ,
+            'salary' =>$this->jobInfo->salary,
+            'companyName' => $this->jobInfo->company_name
         ];
     }
 }

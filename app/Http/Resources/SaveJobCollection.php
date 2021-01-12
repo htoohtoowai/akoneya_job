@@ -6,21 +6,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class SaveJobCollection extends ResourceCollection
 {
-    private $pagination;
-    private $nextId;
-
-    public function __construct($resource, $nextId)
-    {
-        $this->nextId = $nextId;
-    
-        $this->pagination = [
-            'nextId' => $this->nextId
-        ];
-
-        parent::__construct($resource);
-    }
-
-    
+    use BaseResourceCollection;
     public function toArray($request)
     {
         return [

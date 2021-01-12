@@ -30,6 +30,7 @@ class JobRepository extends BaseRepository
   
     public function getJobs($request, $filter)
     {
+        
         $jobInfos = [];
         $jobInformation = new JobResourceCollection($jobInfos, $this->nextId);
         if ($request->nextId != "" && $request->nextId != 'null') {
@@ -38,6 +39,12 @@ class JobRepository extends BaseRepository
                                 ->select('id', 'title', 'client_user_id', 'salary', 'company_name', 'zone_id', 'job_type', 'photo', 'created_at');
 
             $jobInfos = $this->getPaginatedByNextId('id', $request->nextId, $jobInfoQuery);
+           
+            foreach($jobInfos['result'] as $key => $value){
+               
+                $value['isSaved'] = (SavedJob::where('client_user_id', $request->auth_user_id)->where('job_id', $value['id'])->first()!= null);
+            }
+            
             $jobInformation = new JobResourceCollection($jobInfos['result'], $this->nextId);
         }
         return $this->responseRepo->successResponse($jobInformation, $this->responseRepo->successStatusCode, trans('message.successMsg'));
