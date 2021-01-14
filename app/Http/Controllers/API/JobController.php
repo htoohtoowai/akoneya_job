@@ -9,13 +9,15 @@ use App\Repositories\ZoneRepository;
 
 use App\Http\Requests\JobRequest;
 use App\Http\Requests\UpdateJobRequest;
+use App\Filters\JobFilter;
 
 class JobController extends Controller
 {
-    public function __construct(JobRepository $jobRepo,ZoneRepository $zoneRepo)
+    public function __construct(JobRepository $jobRepo,ZoneRepository $zoneRepo,JobFilter $jobFilter)
     {
         $this->jobRepo = $jobRepo;
         $this->zoneRepo = $zoneRepo;
+        $this->jobFilter = $jobFilter;
 
     }
     public function getLocations()
@@ -24,7 +26,7 @@ class JobController extends Controller
     }
     public function getJobs(Request $request)
     {
-        return $this->jobRepo->getJobs($request,10, $request->auth_user_id);
+        return $this->jobRepo->getJobs($request,$this->jobFilter);
     }
     public function createJob(JobRequest $request)
     { 

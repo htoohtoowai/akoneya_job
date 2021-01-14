@@ -9,6 +9,7 @@ use App\PersonalInformation;
 use App\Exceptions\NotFoundException;
 use App\Models\SavedJob;
 use App\Http\Resources\ZoneListResource;
+use App\Http\Resources\JobResourceCollection;
 
 class JobRepository extends BaseRepository
 {
@@ -27,50 +28,26 @@ class JobRepository extends BaseRepository
         $this->disableBannedStatus = config('enums.disableBannedStatus');
     }
   
-    public function getJobs($request, $perPage, $clientUserId)
+    public function getJobs($request, $filter)
     {
-        if (request()->nextId == "" ||  request()->nextId == 'null') {
-            $this->jobInfos = [];
-        } else {
-            $jobs = $this->model->select('id', 'title', 'client_user_id', 'salary', 'company_name', 'zone_id', 'job_type', 'photo', 'created_at')
-                                ->where(function ($query) {
-                                    if (request()->nextId != 0) {
-                                        $query->where('id', '<=', request()->nextId);
-                                    }
-                                    if (request()->title) {
-                                        $query->where('title', 'LIKE', '%'.request()->title.'%');
-                                    }
-                                    if (request()->location) {
-                                        $query->where('zone_id', request()->location);
-                                    }
-                                    if (request()->jobType) {
-                                        $query->where('job_type', request()->jobType);
-                                    }
-                                    $query->where($this->bannedStatus, $this->disableBannedStatus);
-                                })
-                                ->orderBy('id', 'DESC')->limit($perPage + 1)->get();
+        
+        $jobInfos = [];
+        $jobInformation = new JobResourceCollection($jobInfos, $this->nextId);
+        if ($request->nextId != "" && $request->nextId != 'null') {
+            $jobInfoQuery = Job::filter($filter)
+                                ->where($this->bannedStatus, $this->disableBannedStatus)
+                                ->select('id', 'title', 'client_user_id', 'salary', 'company_name', 'zone_id', 'job_type', 'photo', 'created_at');
 
-            $totalCount = $jobs->count();
-
-            if ($totalCount > $perPage) {
-                $this->nextId = $jobs[$perPage]->id;
-    
-                unset($jobs[$totalCount - 1]);
+            $jobInfos = $this->getPaginatedByNextId('id', $request->nextId, $jobInfoQuery);
+           
+            foreach($jobInfos['result'] as $key => $value){
+               
+                $value['isSaved'] = (SavedJob::where('client_user_id', $request->auth_user_id)->where('job_id', $value['id'])->first()!= null);
             }
             
-            foreach ($jobs as $key=> $value) {
-                $this->jobInfos[$key]['id'] = $value['id'];
-                $this->jobInfos[$key]['userId'] = $value['client_user_id'];
-                $this->jobInfos[$key]['title'] = $value['title'];
-                $this->jobInfos[$key]['salary'] = $value['salary'];
-                $this->jobInfos[$key]['companyName'] = $value['company_name'];
-                $this->jobInfos[$key]['photo'] = (getFileUrlFromAkoneyaMedia($value['photo'])) ?? "";
-                $this->jobInfos[$key]['location'] = $this->zones[$value['zone_id']]['name'];
-                $this->jobInfos[$key]['isSaved'] = (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $value['id'])->first() != null);
-                $this->jobInfos[$key]['createdAt'] = strTo24hrFormat($value['created_at']);
-            }
+            $jobInformation = new JobResourceCollection($jobInfos['result'], $this->nextId);
         }
-        return $this->responseRepo->successResponse(['data' => $this->jobInfos,'pagination' => ['nextId' =>$this->nextId]], $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        return $this->responseRepo->successResponse($jobInformation, $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
     public function createJob($request, $clientUserId)
     {
@@ -119,16 +96,16 @@ class JobRepository extends BaseRepository
 
         $mediaPath = "";
 
-        if(request()->photo == null && request()->photoDeleteStatus == null || request()->photoDeleteStatus == "false" ) {
-            if($job->photo){
+        if (request()->photo == null && request()->photoDeleteStatus == null || request()->photoDeleteStatus == "false") {
+            if ($job->photo) {
                 $mediaPath = $job->photo ;
             }
         }
-        if(request()->photo == null && request()->photoDeleteStatus == "true") {
+        if (request()->photo == null && request()->photoDeleteStatus == "true") {
             deleteFileFromAkoneyaMedia($job->photo);
             $mediaPath = "" ;
         }
-        if(request()->photo) {
+        if (request()->photo) {
             $mediaPath = fileUploadToAkoneyaMedia($request->photo, $this->jobMediaDirectory);
             deleteFileFromAkoneyaMedia($job->photo);
         }
