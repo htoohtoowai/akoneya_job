@@ -30,7 +30,6 @@ class JobRepository extends BaseRepository
   
     public function getJobs($request, $filter)
     {
-        
         $jobInfos = [];
         $jobInformation = new JobResourceCollection($jobInfos, $this->nextId);
         if ($request->nextId != "" && $request->nextId != 'null') {
@@ -40,8 +39,7 @@ class JobRepository extends BaseRepository
 
             $jobInfos = $this->getPaginatedByNextId('id', $request->nextId, $jobInfoQuery);
            
-            foreach($jobInfos['result'] as $key => $value){
-               
+            foreach ($jobInfos['result'] as $key => $value) {
                 $value['isSaved'] = (SavedJob::where('client_user_id', $request->auth_user_id)->where('job_id', $value['id'])->first()!= null);
             }
             
@@ -130,8 +128,9 @@ class JobRepository extends BaseRepository
     }
     public function deleteJob($id, $clientUserId)
     {
+        
         $job = $this->getJobById($id, $clientUserId);
-
+        SavedJob::where('job_id', $id)->delete();
         deleteFileFromAkoneyaMedia($job->photo);
         $job->delete();
 
