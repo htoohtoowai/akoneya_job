@@ -47,5 +47,7 @@ return [
     'jobTypeNotFound' => '该作业类型不存在。',
     'jobReportFail' => '您无法举报您的产品。',
     'itemNotFoundMsg' => '此项不存在。',
+    'invalidFileType' => "无效的文件。",
+    'invalidFileSize' => "文件大小必须小于2 MB。"
 
 ];
