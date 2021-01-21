@@ -49,5 +49,7 @@ return [
     'jobTypeNotFound' => 'ဒီအလုပ်အမျိုးအစားမရှိပါ။',
     'jobReportFail' => 'သင့်ရဲ့ပို့စ်ကို သင်ရီပို့လုပ်မရပါ။',
     'itemNotFoundMsg' => 'ဒီပစ္စည်းရှာမတွေ့ပါ။',
+    'invalidFileType' => "ဖိုင်အမျိုးအစား မမှန်ကန်ပါ။",
+    'invalidFileSize' => "ဖိုင်အရွယ်အစားသည် ၂ MB ထက်နည်းရမည်။"
 
 ];

@@ -35,10 +35,20 @@ class UpdateJobRequest extends FormRequest
             'phone' => 'required|max:50',
             'email' => 'max:50',
             'gender' => 'required',
+            'photo' => config("media.file.mimetypes").'|'.config("media.file.sizeLimit"),
             'description' => 'max:500',
             'requirement' => 'max:500'
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'photo.mimes' => trans('message.invalidFileType'),
+            'photo.uploaded' => trans('message.invalidFileSize')
+        ];
+    }
+
     protected function failedValidation(Validator $validator)
     {
         $errors = $validator->errors();
