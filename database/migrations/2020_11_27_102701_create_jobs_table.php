@@ -30,6 +30,7 @@ class CreateJobsTable extends Migration
                 $table->text('requirement', 500)->nullable();
                 $table->text('photo', 150)->nullable();
                 $table->timestamps();
+                $table->index(['title','job_type','zone_id']);
             });
         }
     }
