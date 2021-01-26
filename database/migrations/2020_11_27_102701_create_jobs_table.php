@@ -17,18 +17,18 @@ class CreateJobsTable extends Migration
             Schema::create('jobs', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedInteger('client_user_id');
-                $table->text('title', 200);
-                $table->text('company_name', 200);
+                $table->string('title', 200);
+                $table->string('company_name', 200);
                 $table->integer('job_type');
                 $table->integer('zone_id');
-                $table->text('salary', 200);
+                $table->string('salary', 200);
                 $table->text('address', 500);
-                $table->text('phone', 50);
-                $table->text('email', 50)->nullable();
+                $table->string('phone', 50);
+                $table->string('email', 50)->nullable();
                 $table->integer('gender');
                 $table->text('description', 500)->nullable();
                 $table->text('requirement', 500)->nullable();
-                $table->text('photo', 150)->nullable();
+                $table->string('photo', 150)->nullable();
                 $table->timestamps();
                 $table->index(['title','job_type','zone_id']);
             });
