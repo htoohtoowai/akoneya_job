@@ -13,11 +13,10 @@ use App\Http\Resources\JobResourceCollection;
 
 class JobRepository extends BaseRepository
 {
-    public function __construct(Job $model, ResponseRepository $responseRepo, JobTypeRepository $JobTypeRepo)
+    public function __construct(Job $model, ResponseRepository $responseRepo)
     {
         $this->model = $model;
         $this->responseRepo = $responseRepo;
-        $this->JobTypeRepo = $JobTypeRepo;
         $this->successStatusCode = config('http_status.success');
         $this->perPage = config('enums.perPage');
         $this->jobMediaDirectory = config('media.job.directory');
@@ -30,12 +29,6 @@ class JobRepository extends BaseRepository
   
     public function getJobs($request, $filter)
     {
-        if (isset($request->jobType)) {
-            $jobType = $this->JobTypeRepo->getById($request->jobType);
-            if (!$jobType) {
-                throw new NotFoundException(trans('message.jobTypeNotFound'));
-            }
-        }
         $jobInfos = [];
         $jobInformation = new JobResourceCollection($jobInfos, $this->nextId);
         if ($request->nextId != "" && $request->nextId != 'null') {
