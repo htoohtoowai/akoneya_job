@@ -4,7 +4,7 @@ namespace App\Repositories;
 use App\Models\Job;
 use App\Models\JobType;
 use App\Repositories\ResponseRepository;
-use App\Repositories\SaveJobRepository;
+use App\Repositories\JobTypeRepository;
 use App\PersonalInformation;
 use App\Exceptions\NotFoundException;
 use App\Models\SavedJob;
@@ -13,11 +13,11 @@ use App\Http\Resources\JobResourceCollection;
 
 class JobRepository extends BaseRepository
 {
-    public function __construct(Job $model, ResponseRepository $responseRepo, SaveJobRepository $saveJobRepo)
+    public function __construct(Job $model, ResponseRepository $responseRepo, JobTypeRepository $JobTypeRepo)
     {
         $this->model = $model;
         $this->responseRepo = $responseRepo;
-        $this->saveJobRepo = $saveJobRepo;
+        $this->JobTypeRepo = $JobTypeRepo;
         $this->successStatusCode = config('http_status.success');
         $this->perPage = config('enums.perPage');
         $this->jobMediaDirectory = config('media.job.directory');
@@ -30,6 +30,12 @@ class JobRepository extends BaseRepository
   
     public function getJobs($request, $filter)
     {
+        if (isset($request->jobType)) {
+            $jobType = $this->JobTypeRepo->getById($request->jobType);
+            if (!$jobType) {
+                throw new NotFoundException(trans('message.jobTypeNotFound'));
+            }
+        }
         $jobInfos = [];
         $jobInformation = new JobResourceCollection($jobInfos, $this->nextId);
         if ($request->nextId != "" && $request->nextId != 'null') {
@@ -77,7 +83,9 @@ class JobRepository extends BaseRepository
     }
     public function getJobById($id, $clientUserId)
     {
-        $job = $this->model->where('id', $id)
+        $checkIntJobId = checkInteger($id);
+
+        $job = $this->model->where('id', $checkIntJobId)
                             ->where('client_user_id', $clientUserId)
                             ->where($this->bannedStatus, $this->disableBannedStatus)->first();
         if (!$job) {
@@ -128,7 +136,6 @@ class JobRepository extends BaseRepository
     }
     public function deleteJob($id, $clientUserId)
     {
-        
         $job = $this->getJobById($id, $clientUserId);
         SavedJob::where('job_id', $id)->delete();
         deleteFileFromAkoneyaMedia($job->photo);
@@ -138,7 +145,7 @@ class JobRepository extends BaseRepository
     }
     public function getDetails($id, $clientUserId)
     {
-        $job = $this->saveJobRepo->jobFind($id);
+        $job = $this->activeJobFind($id);
        
         if (!$job) {
             throw new NotFoundException(trans('message.notFoundMsg'));

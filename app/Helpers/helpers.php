@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\File;
+use App\Exceptions\NotFoundException;
 
 /**
  * Upload File To Akoneya Media
@@ -64,5 +65,17 @@ if (!function_exists("strTo24hrFormat")) {
     function strTo24hrFormat($value)
     {
         return date("Y-m-d H:i:s", strtotime($value));
+    }
+}
+
+if (!function_exists("checkInteger")) {
+    function checkInteger($value)
+    {
+        $idValue = (!is_int($value) ? (ctype_digit($value)) : true);
+        if (!$idValue) {
+            throw new NotFoundException(trans('message.notFoundMsg'));
+
+        }
+        return $value;
     }
 }

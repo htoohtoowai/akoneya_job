@@ -35,7 +35,7 @@ class JobRequest extends FormRequest
             'phone' => 'required|max:50',
             'email' => 'max:50',
             'gender' => 'required',
-            'photo' => config("media.file.mimetypes").'|'.config("media.file.sizeLimit"),
+            'photo' => 'image|file|max:'.config("filesystems.imageSizeLimit"),
             'description' => 'max:500',
             'requirement' => 'max:500'
         ];
@@ -44,8 +44,24 @@ class JobRequest extends FormRequest
     public function messages()
     {
         return [
-            'photo.mimes' => trans('message.invalidFileType'),
-            'photo.uploaded' => trans('message.invalidFileSize')
+            'title.required' => trans('message.jobTitleRequired'),
+            'title.max' => trans('message.overJobTitleCharacters'),
+            'companyName.required' => trans('message.companyNameRequired'),
+            'companyName.max' => trans('message.overCompanyNameCharacters'),
+            'jobType.required' => trans('message.jobTypeRequired'),
+            'location.required' => trans('message.locationTypeRequired'),
+            'salary.required' => trans('message.salaryRequired'),
+            'salary.max' => trans('message.overSalaryCharacters'),
+            'address.required' => trans('message.addressRequired'),
+            'address.max' => trans('message.overAddressCharacters'),
+            'phone.required' => trans('message.phoneRequired'),
+            'phone.max' => trans('message.overPhoneCharacters'),
+            'email.max' => trans('message.overEmailCharacters'),
+            'gender.required' => trans('message.genderRequired'),
+            'photo.image' => trans('message.invalidFileType'),
+            'photo.max' => trans('message.invalidFileSize'),
+            'description.max' => trans('message.overDescriptionCharacters'),
+            'requirement.max' => trans('message.overRequirementCharacters'),
         ];
     }
 
