@@ -13,12 +13,11 @@ use App\Filters\JobFilter;
 
 class JobController extends Controller
 {
-    public function __construct(JobRepository $jobRepo,ZoneRepository $zoneRepo,JobFilter $jobFilter)
+    public function __construct(JobRepository $jobRepo, ZoneRepository $zoneRepo, JobFilter $jobFilter)
     {
         $this->jobRepo = $jobRepo;
         $this->zoneRepo = $zoneRepo;
         $this->jobFilter = $jobFilter;
-
     }
     public function getLocations()
     {
@@ -26,15 +25,15 @@ class JobController extends Controller
     }
     public function getJobs(Request $request)
     {
-        return $this->jobRepo->getJobs($request,$this->jobFilter);
+        return $this->jobRepo->getJobs($request, $this->jobFilter);
     }
     public function createJob(JobRequest $request)
-    { 
+    {
         return $this->jobRepo->createJob($request, $request->auth_user_id);
     }
-    public function updateJob(UpdateJobRequest $request,$id)
+    public function updateJob(UpdateJobRequest $request, $id)
     {
-        return $this->jobRepo->updateJob($request,$id, $request->auth_user_id);
+        return $this->jobRepo->updateJob($request, $id, $request->auth_user_id);
     }
     public function deleteJob(Request $request, $id)
     {
@@ -44,5 +43,4 @@ class JobController extends Controller
     {
         return $this->jobRepo->getDetails($id, $request->auth_user_id);
     }
-    
 }

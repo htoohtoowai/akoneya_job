@@ -1,7 +1,6 @@
 <?php
 namespace App\Repositories;
 
-use App\Models\Job;
 use App\Models\JobReport;
 use App\Models\JobReportReason;
 use App\Repositories\ResponseRepository;
@@ -10,11 +9,10 @@ use App\Exceptions\NotFoundException;
 
 class ReportRepository extends BaseRepository
 {
-    public function __construct(JobReportReason $model, JobReport $reportModel, JobRepository $jobRepo, ResponseRepository $responseRepo)
+    public function __construct(JobReportReason $model, JobReport $reportModel, ResponseRepository $responseRepo)
     {
         $this->model = $model;
         $this->reportModel = $reportModel;
-        $this->jobRepo = $jobRepo;
         $this->responseRepo = $responseRepo;
         $this->disableDeletedStatus = config('enums.disableDeletedStatus');
         $this->disableBannedStatus = config('enums.disableBannedStatus');
@@ -29,7 +27,8 @@ class ReportRepository extends BaseRepository
 
     public function createJobReport($request, $jobId)
     { 
-        $job = Job::where('banned_status', $this->disableBannedStatus)->find($jobId);
+        $checkIntJobId = checkInteger($jobId);
+        $job = $this->activeJobFind($checkIntJobId);
 
         if (!$job) {
             throw new NotFoundException(trans('message.itemNotFoundMsg'));

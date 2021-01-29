@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Repositories;
+use App\Models\Job;
 
 abstract class BaseRepository
 {
     protected $model;
-
     public function __construct(\Model $model)
     {
         $this->model = $model;
+        $this->disableBannedStatus = config('enums.disableBannedStatus');
     }
 
     public function getById($id)
@@ -19,6 +20,12 @@ abstract class BaseRepository
     public function getActiveList()
     {
         return $this->model->where('deleted_status', config('enums.disableDeletedStatus'));
+    }
+    public function activeJobFind($jobId)
+    {
+        $checkIntJobId = checkInteger($jobId);
+
+        return Job::where('id', $checkIntJobId)->where('banned_status', $this->disableBannedStatus)->first();
     }
     public function getPaginatedByNextId($columnId, $nextId, $queryInfo)
     {
