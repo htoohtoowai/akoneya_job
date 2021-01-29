@@ -7,6 +7,7 @@ use App\Repositories\ResponseRepository;
 use App\Exceptions\NotFoundException;
 use App\Http\Resources\SaveJob as SaveJobResource;
 use App\Http\Resources\SaveJobCollection;
+use DB;
 
 class SaveJobRepository extends BaseRepository
 {
@@ -15,16 +16,16 @@ class SaveJobRepository extends BaseRepository
         $this->responseRepo = $responseRepo;
         $this->perPage = config('enums.perPage');
         $this->nextId = null;
-        $this->bannedStatus = 'banned_status';
         $this->disableBannedStatus = config('enums.disableBannedStatus');
     }
     public function saveJob($jobId, $userId)
     {
-        $job = $this->jobFind($jobId);
+        $job = $this->activeJobFind($jobId);
         if (!$job) {
             throw new NotFoundException(trans('message.notFoundMsg'));
         }
-        $saveJob = SavedJob::where("job_id", $jobId)->where("client_user_id", $userId)->first();
+        
+        $saveJob = SavedJob::where("job_id",$job->id)->where("client_user_id", $userId)->first();
         if (!$saveJob) {
             SavedJob::create([
                 "job_id" => $jobId,
@@ -48,14 +49,15 @@ class SaveJobRepository extends BaseRepository
             }
 
             $saveJobListData = new SaveJobCollection($saveJobs['result'], $this->nextId);
-
         }
         
         return $this->responseRepo->successResponse($saveJobListData, $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
     public function saveJobDelete($jobId, $userId)
     {
-        $job = SavedJob::where('job_id', $jobId)->where('client_user_id', $userId)->first();
+        $checkIntJobId = checkInteger($jobId);
+
+        $job = SavedJob::where('job_id', $checkIntJobId)->where('client_user_id', $userId)->first();
         
         if (!$job) {
             throw new NotFoundException(trans('message.notFoundMsg'));
@@ -63,8 +65,5 @@ class SaveJobRepository extends BaseRepository
         $job->delete();
         return $this->responseRepo->successResponse(null, $this->responseRepo->successStatusCode, trans('message.deleteSuccessMsg'));
     }
-    public function jobFind($jobId)
-    {
-        return Job::where('id', $jobId)->where($this->bannedStatus, $this->disableBannedStatus)->first();
-    }
+    
 }

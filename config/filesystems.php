@@ -86,5 +86,6 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
     ],
+    'imageSizeLimit' => env('IMAGE_SIZE_LIMIT_IN_KB', 600)
 
 ];
