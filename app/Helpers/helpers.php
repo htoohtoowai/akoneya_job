@@ -16,7 +16,7 @@ if (!function_exists('fileUploadToAkoneyaMedia')) {
      
         $filePath = $directoryName."/".$fileName;
 
-        if (Storage::disk('akoneya')->put($filePath, file_get_contents($file->getRealPath()))) {
+        if (Storage::put($filePath, file_get_contents($file->getRealPath()))) {
             return $filePath;
         }
         return null; 
@@ -29,7 +29,7 @@ if (!function_exists('fileUploadToAkoneyaMedia')) {
 if (!function_exists('deleteFileFromAkoneyaMedia')) {
     function deleteFileFromAkoneyaMedia($filePath)
     {
-        Storage::disk('akoneya')->delete($filePath);
+        Storage::delete($filePath);
     }
 }
 
@@ -40,7 +40,7 @@ if (!function_exists('getFileUrlFromAkoneyaMedia')) {
     function getFileUrlFromAkoneyaMedia($filePath)
     {
         if($filePath != null){
-            $fileUrl = Storage::disk("akoneya")->url($filePath);
+            $fileUrl = Storage::url($filePath);
             return $fileUrl;
         }
         return null; 
