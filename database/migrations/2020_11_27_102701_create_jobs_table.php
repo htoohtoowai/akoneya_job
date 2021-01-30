@@ -29,6 +29,7 @@ class CreateJobsTable extends Migration
                 $table->text('description', 500)->nullable();
                 $table->text('requirement', 500)->nullable();
                 $table->string('photo', 150)->nullable();
+                $table->boolean('banned_status')->default(0);
                 $table->timestamps();
                 $table->index(['title','job_type','zone_id']);
             });
