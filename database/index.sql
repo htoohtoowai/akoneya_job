@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD INDEX( `title`, `job_type`, `zone_id`);

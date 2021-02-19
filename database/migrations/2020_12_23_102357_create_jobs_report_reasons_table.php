@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNewsfeedReportReasonsTable extends Migration
+class CreateJobsReportReasonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateNewsfeedReportReasonsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('newsfeed_report_reasons')) {
-            Schema::create('newsfeed_report_reasons', function (Blueprint $table) {
+        if (!Schema::hasTable('jobs_report_reasons')) {
+            Schema::create('jobs_report_reasons', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
-                $table->integer('report_type');
                 $table->boolean('deleted_status')->default(0);
             });
         }
@@ -30,6 +29,6 @@ class CreateNewsfeedReportReasonsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('newsfeed_report_reasons');
+        Schema::dropIfExists('jobs_report_reasons');
     }
 }

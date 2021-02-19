@@ -59,7 +59,7 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'result' => null,
                 'statusCode' => 404,
-                'message' => 'Not Found.'
+                'message' => 'Not Found.asdf'
             ],Response::HTTP_NOT_FOUND);
         }
 

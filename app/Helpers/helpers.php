@@ -2,59 +2,80 @@
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Http\File;
+use App\Exceptions\NotFoundException;
 
 /**
  * Upload File To Akoneya Media
  */
-
-if (!function_exists('base64ImageUploadToAkoneyaMedia')) {
-    function base64ImageUploadToAkoneyaMedia($base64String, $directoryName)
+if (!function_exists('fileUploadToAkoneyaMedia')) {
+    function fileUploadToAkoneyaMedia($file, $directoryName)
     {
-        $file = base64_decode($base64String);
-        $fileExtension = ".png";
-        $fileName = time().Str::random(6).$fileExtension;
-        $mediaPath = $directoryName."/".$fileName;
-        if (Storage::disk('akoneya')->put($mediaPath, $file)) {
-            return $mediaPath;
+        $fileExtension = $file->getClientOriginalExtension();
+     
+        $fileName = time().Str::random(6) . "." . $fileExtension;
+     
+        $filePath = $directoryName."/".$fileName;
+
+        if (Storage::put($filePath, file_get_contents($file->getRealPath()))) {
+            return $filePath;
         }
-        return null;
+        return null; 
     }
 }
+
 /**
  * Delete File From Akoneya Media
  */
 if (!function_exists('deleteFileFromAkoneyaMedia')) {
     function deleteFileFromAkoneyaMedia($filePath)
     {
-        Storage::disk('akoneya')->delete($filePath);
+        Storage::delete($filePath);
     }
 }
 
 /*
- * Get Fiel URL from Akoneya Medai
+ * Get Field URL from Akoneya Media
  */
 if (!function_exists('getFileUrlFromAkoneyaMedia')) {
     function getFileUrlFromAkoneyaMedia($filePath)
     {
-        $fileUrl = Storage::disk("akoneya")->url($filePath);
-        return $fileUrl;
+        if($filePath != null){
+            $fileUrl = Storage::url($filePath);
+            return $fileUrl;
+        }
+        return null; 
     }
 }
+
 /**
 * Check Request Auth User Id
-*
 */
+if(!function_exists('check_auth_user_id')) {
 
-if (!function_exists('check_auth_user_id')) {
-    function check_auth_user_id($authUserId, $passedId)
-    {
-        return $authUserId == $passedId;
+    function check_auth_user_id($auth_user_id,$passedId) {
+
+        return $auth_user_id == $passedId;
     }
 }
 
+/**
+* Get Date format
+*/
 if (!function_exists("strTo24hrFormat")) {
     function strTo24hrFormat($value)
     {
         return date("Y-m-d H:i:s", strtotime($value));
+    }
+}
+
+if (!function_exists("checkInteger")) {
+    function checkInteger($value)
+    {
+        $idValue = (!is_int($value) ? (ctype_digit($value)) : true);
+        if (!$idValue) {
+            throw new NotFoundException(trans('message.notFoundMsg'));
+
+        }
+        return $value;
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNewsfeedLikesTable extends Migration
+class CreateJobTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateNewsfeedLikesTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('newsfeed_likes')) {
-            Schema::create('newsfeed_likes', function (Blueprint $table) {
+        if (!Schema::hasTable('job_types')) {
+            Schema::create('job_types', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedInteger('client_user_id');
-                $table->unsignedInteger('newsfeed_id');
-                $table->timestamps();
+                $table->string('name',50);
+                $table->boolean('deleted_status')->default(0);
             });
         }
     }
@@ -30,6 +29,6 @@ class CreateNewsfeedLikesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('newsfeed_likes');
+        Schema::dropIfExists('job_types');
     }
 }
