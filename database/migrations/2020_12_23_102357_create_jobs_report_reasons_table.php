@@ -17,7 +17,7 @@ class CreateJobsReportReasonsTable extends Migration
             Schema::create('jobs_report_reasons', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
-                $table->boolean('deleted_status')->default(0);
+                $table->boolean('publish_status')->default(1);
             });
         }
     }
