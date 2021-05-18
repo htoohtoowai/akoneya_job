@@ -16,11 +16,13 @@ class ReportRepository extends BaseRepository
         $this->responseRepo = $responseRepo;
         $this->disableDeletedStatus = config('enums.disableDeletedStatus');
         $this->disableBannedStatus = config('enums.disableBannedStatus');
+        $this->enablePublishStatus = config('enums.enablePublishStatus');
+
     }
 
     public function getReportReason($request)
     {
-        $reportReasonList = $this->model->select('id', 'name')->where('deleted_status', $this->disableDeletedStatus)->get();
+        $reportReasonList = $this->model->select('id', 'name')->where('publish_status', $this->enablePublishStatus)->get();
 
         return $this->responseRepo->successResponse(["reportReasons" => $reportReasonList], $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
@@ -52,7 +54,7 @@ class ReportRepository extends BaseRepository
 
     public function findReportReason($reasonId)
     {
-        $reportReason = $this->model->where('id', $reasonId)->where('deleted_status', $this->disableDeletedStatus)->first();
+        $reportReason = $this->model->where('id', $reasonId)->where('publish_status', $this->enablePublishStatus)->first();
         
         if (!$reportReason) {
             throw new NotFoundException(trans('message.reportReasonNotFound'));
