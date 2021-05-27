@@ -11,13 +11,10 @@ class ZoneRepository extends BaseRepository
     {
         $this->model = $model;
         $this->responseRepo = $responseRepo;
-		$this->zones = config('zones.zoneSelections');
-
     }
     public function getZones()
     {
-        $data['locations'] = ZoneListResource::collection($this->zones)->sortBy('name')->values();
-
-        return $this->responseRepo->successResponse($data, $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        $data['locations'] = ZoneListResource::collection(trans('zones.zoneSelections'))->sortBy('name')->values();
+        return $this->responseRepo->successResponse($data, $this->responseRepo->successStatusCode,trans('message.successMsg'));
     }
 }

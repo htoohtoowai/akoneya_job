@@ -16,7 +16,7 @@ class JobTypeResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "name" => $this->name
+            'name' => changeLanguage($request, $this->name, $this->name_mm, $this->name_zh)
         ];
     }
 }

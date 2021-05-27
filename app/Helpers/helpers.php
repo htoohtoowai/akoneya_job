@@ -79,3 +79,19 @@ if (!function_exists("checkInteger")) {
         return $value;
     }
 }
+
+if(!function_exists("changeLanguage")){
+    function changeLanguage($request, $en, $mm, $zh)
+    {
+        $headerLanguage = $request->header('Content-Language');
+       
+        if ($headerLanguage == 'mm' && $mm != null){
+            $lang = $mm;
+        } elseif ($headerLanguage == 'zh' && $zh != null){
+            $lang = $zh;
+        } else {
+            $lang = $en;
+        }
+        return $lang;
+    }
+}
