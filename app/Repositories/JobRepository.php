@@ -21,7 +21,6 @@ class JobRepository extends BaseRepository
         $this->perPage = config('enums.perPage');
         $this->jobMediaDirectory = config('media.job.directory');
         $this->nextId = null;
-        $this->zones = config('zones.zoneSelections');
         $this->jobInfos = [];
         $this->bannedStatus = 'banned_status';
         $this->disableBannedStatus = config('enums.disableBannedStatus');
@@ -72,7 +71,7 @@ class JobRepository extends BaseRepository
             'photo' => $mediaPath,
         ]);
 
-        return $this->responseRepo->successResponse($this->getJobDetailResponse($job, $clientUserId), $this->responseRepo->createStatusCode, trans('message.createSuccessMsg'));
+        return $this->responseRepo->successResponse($this->getJobDetailResponse($job, $request), $this->responseRepo->createStatusCode, trans('message.createSuccessMsg'));
     }
     public function getJobById($id, $clientUserId)
     {
@@ -125,7 +124,7 @@ class JobRepository extends BaseRepository
 
         $updatedInfo = $this->getJobById($id, $clientUserId);
      
-        return $this->responseRepo->successResponse($this->getJobDetailResponse($updatedInfo, $clientUserId), $this->responseRepo->successStatusCode, trans('message.updateSuccessMsg'));
+        return $this->responseRepo->successResponse($this->getJobDetailResponse($updatedInfo, $request), $this->responseRepo->successStatusCode, trans('message.updateSuccessMsg'));
     }
     public function deleteJob($id, $clientUserId)
     {
@@ -136,7 +135,7 @@ class JobRepository extends BaseRepository
 
         return $this->responseRepo->successResponse(null, $this->responseRepo->successStatusCode, trans('message.deleteSuccessMsg'));
     }
-    public function getDetails($id, $clientUserId)
+    public function getDetails($id, $request)
     {
         $job = $this->activeJobFind($id);
        
@@ -144,22 +143,33 @@ class JobRepository extends BaseRepository
             throw new NotFoundException(trans('message.notFoundMsg'));
         }
 
-        return $this->responseRepo->successResponse($this->getJobDetailResponse($job, $clientUserId), $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        return $this->responseRepo->successResponse($this->getJobDetailResponse($job, $request), $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
 
-    public function getJobDetailResponse($job, $clientUserId)
+    public function getJobDetailResponse($job, $request)
     {
         $getProfile=PersonalInformation::select('client_user_id', 'name', 'image')->where('client_user_id', $job->client_user_id)->first();
 
-        $jobType = JobType::select('id', 'name')->where('id', $job->job_type)->first();
+        $jobType = JobType::where('id', $job->job_type)->first();
+
+        $headerLanguage = $request->header('Content-Language');
+       
+        if ($headerLanguage == 'mm'){
+            $jobTypeName = $jobType->name_mm;
+        } elseif ($headerLanguage == 'zh'){
+            $jobTypeName = $jobType->name_zh;
+        } else {
+            $jobTypeName = $jobType->name;
+        }
+        $zones = trans('zones.zoneSelections');
 
         return  [
             'id' => $job->id,
             'title' => $job->title,
             'salary' => $job->salary,
-            'jobType' => ['id'=>$jobType->id,'name'=>$jobType->name],
+            'jobType' => ['id'=>$jobType->id,'name'=>$jobTypeName],
             'companyName' => $job->company_name,
-            'location' => ['id'=>$this->zones[$job->zone_id]['id'],'name'=>$this->zones[$job->zone_id]['name']],
+            'location' => ['id'=>$zones[$job->zone_id]['id'],'name'=>$zones[$job->zone_id]['name']],
             'photo' => (getFileUrlFromAkoneyaMedia($job->photo))?? "",
             'phone' => explode(",", $job->phone),
             'gender' => (int)$job->gender,
@@ -167,7 +177,7 @@ class JobRepository extends BaseRepository
             'address' => ($job->address) ?? "",
             'description' => ($job->description)?? "",
             'requirement' => ($job->requirement) ?? "",
-            'isSaved'=> (SavedJob::where('client_user_id', $clientUserId)->where('job_id', $job->id)->first() != null),
+            'isSaved'=> (SavedJob::where('client_user_id', $request->auth_user_id)->where('job_id', $job->id)->first() != null),
             'user'=> ['id'=> $getProfile->client_user_id, 'name'=> $getProfile->name, 'image'=>getFileUrlFromAkoneyaMedia($getProfile->image)],
             "createdAt"=> strTo24hrFormat($job->created_at)
         ];

@@ -6,6 +6,7 @@ use App\Models\JobReportReason;
 use App\Repositories\ResponseRepository;
 use App\Repositories\JobRepository;
 use App\Exceptions\NotFoundException;
+use App\Http\Resources\JobReportReasonCollection;
 
 class ReportRepository extends BaseRepository
 {
@@ -17,14 +18,12 @@ class ReportRepository extends BaseRepository
         $this->disableDeletedStatus = config('enums.disableDeletedStatus');
         $this->disableBannedStatus = config('enums.disableBannedStatus');
         $this->enablePublishStatus = config('enums.enablePublishStatus');
-
     }
 
     public function getReportReason($request)
     {
-        $reportReasonList = $this->model->select('id', 'name')->where('publish_status', $this->enablePublishStatus)->get();
-
-        return $this->responseRepo->successResponse(["reportReasons" => $reportReasonList], $this->responseRepo->successStatusCode, trans('message.successMsg'));
+        $reportReasonList = $this->model->where('publish_status', $this->enablePublishStatus)->get();
+        return $this->responseRepo->successResponse(new JobReportReasonCollection($reportReasonList), $this->responseRepo->successStatusCode, trans('message.successMsg'));
     }
 
     public function createJobReport($request, $jobId)
