@@ -12,6 +12,10 @@ composer :
     - php artisan key:generate
     - php artisan jwt:secret
     - touch database/test.sqlite
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/'
+      when: manual
   artifacts:
     # (Optional) Give it an expiration date, 
     # after that period you won't be able to download them via the UI anymore.
@@ -31,6 +35,10 @@ phpunit:
   script:
     - vendor/phpunit/phpunit/phpunit --version
     - vendor/bin/phpunit
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature/'
+      when: manual
 
     
     

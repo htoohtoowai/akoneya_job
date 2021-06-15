@@ -17,7 +17,7 @@ class JobResource extends JsonResource
             'salary' => $this->salary,
             'companyName' => $this->company_name,
             'photo' => (getFileUrlFromAkoneyaMedia($this->photo)) ?? "",
-            'location' => config('zones.zoneSelections.'.$this->zone_id.'.name'),
+            'location' => trans('zones.zoneSelections.'.$this->zone_id.'.name'),
             'isSaved' => $this->isSaved,
             'createdAt' =>  strTo24hrFormat($this->created_at)
 

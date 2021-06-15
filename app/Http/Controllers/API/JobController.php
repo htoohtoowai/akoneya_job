@@ -41,6 +41,6 @@ class JobController extends Controller
     }
     public function details(Request $request, $id)
     {
-        return $this->jobRepo->getDetails($id, $request->auth_user_id);
+        return $this->jobRepo->getDetails($id, $request);
     }
 }

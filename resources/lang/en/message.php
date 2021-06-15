@@ -36,5 +36,5 @@ return [
     'overEmailCharacters' => 'The email not be greater than 50 characters.',
     'genderRequired' => 'The gender is required.',
     'overDescriptionCharacters' => 'The description not be greater than 500 characters.',
-    'overRequirementCharacters' => 'The requirement not be greater than 500 characters.'
+    'overRequirementCharacters' => 'The requirement not be greater than 500 characters.',
 ];

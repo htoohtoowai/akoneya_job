@@ -20,7 +20,7 @@ class SaveJob extends JsonResource
             'photo' => $this->jobInfo->photo ? getFileUrlFromAkoneyaMedia($this->jobInfo->photo) : "",
             'title' => $this->jobInfo->title,
             'createdAt' => strTo24hrFormat($this->jobInfo->created_at),
-            'location' => config('zones.zoneSelections.'.$this->jobInfo->zone_id.'.name') ,
+            'location' => trans('zones.zoneSelections.'.$this->jobInfo->zone_id.'.name') ,
             'salary' =>$this->jobInfo->salary,
             'companyName' => $this->jobInfo->company_name
         ];
